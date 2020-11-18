@@ -25,19 +25,12 @@ Only to be used by Billy.
 
 
 
-
-
-
-
-
-
 I think we should implement a similar format to how ASP.net MasterPage/RazorPages/Angular handles consistent styling. 
 For example, in my Lab 5 I have this:
 
 header.php:
 #########################################################################
-    <?php 
-    $header  = <<<HEREDOC
+
         <!DOCTYPE html>
     <html>
         <head>
@@ -52,7 +45,8 @@ header.php:
                     //NAV BAR LINKS HERE!!!
                 </header>
                 <div class="content">
-    HEREDOC;
+
+
     ?>
 #########################################################################
 
@@ -70,6 +64,9 @@ $footer = <<<HEREDOC
     </body>
 </html>
 HEREDOC;
+
+print $footer;
+
 ?>
 
 #########################################################################
@@ -81,14 +78,13 @@ login.php / myalbums.php / myfriends.php
 #########################################################################
 <?php
 include('header.php');
-include('header.php');
 
-print $header;
 ?>
 
 //ALL YOUR CODE HERE GETS AUTO PUT INTO A MAIN CONTAINER DIV!
 
 <?php
-print $footer;
+include('footer.php');
+
 ?>
 #########################################################################
