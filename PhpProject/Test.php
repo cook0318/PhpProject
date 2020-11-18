@@ -7,7 +7,7 @@
     <body>
 
         <?php
-        print "<h1>If you can see this, we good</h1>";
+        print "<h1>If you can see this, we are on the new master commit.</h1>";
         ?> 
 
     </body>
