@@ -27,22 +27,22 @@ C:/Program Files/Ampps/www/CST8257/PhpProject/
 
 ## To Do
 
-- Identify main entities/classes/parts of project: the "friendships" and how they work, "albums" and how they work, login security... etc
-    - Split the project duties amongst ourselves
-- Design database together (somebody can do the creation after the meeting, but at least type out the tables/entities/relationships together)
-- Identify project folder structure. Here's a starting point but we can change anything:
  ````
 
     \_PhpProject
         \_nbProject
         \_ProgrammingResources
-        \_Classes                       // would include class methods like Friendship.CheckIfFriends(user1,user2)
+        \_Classes                       
             \_User.php
             \_Album.php         
             \_Friendship.php
-        \_Functions                     // for non-class related functions for generating HTML, doing simple logic
+        \_Functions                     
             \_DataBaseAccess.php
-            \_GeneralFunctions.php      
+            \_GeneralFunctions.php
+            \_ValidationFunctions.php   (checking for input validation)    
+        \_Common
+            \_Header.php
+            \_Footer.php
         \_Templates                     // html pages
             \_Login.php
             \_ViewAlbum.php
@@ -50,11 +50,41 @@ C:/Program Files/Ampps/www/CST8257/PhpProject/
         \_Scripts                       // if we use JS
         \_CSS
         \_UserPhotos
-            \_User123AlbumABC
+            \_Photo1111.jpg
+            \_Photo1112.jpg
         \_ReadMe.md
             
 ````
-- Set out coding standards
-   - camelCase or PascalCase, for variables/classes/methods/functions?
-- Figure out universal "things"
-   - No idea how to explain this but for example the current user object will be stored in $_SESSION['CurrentUser'] and other stuff we will all use
+
+
+EVERTON
+-Make the database 
+-Design/copy Header and Footer
+	-Ensure current page is not displayed or highlighted and disabled in Nav Bar
+-Secure login/signup with hashed passwords
+	-Ensure requested page is saved in session
+
+
+1 Billy
+-Create Classes 
+-Adding album
+-viewing own albums
+
+
+2 Everton
+-view friends photos
+-viewing own photos
+-comments
+
+
+3 Oussama
+-Photo upload page
+-Fiendships/requests/myfriends
+
+
+
+
+
+
+
+
