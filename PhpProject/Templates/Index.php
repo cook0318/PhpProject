@@ -1,16 +1,18 @@
-<html lang="en">
-    <head>
-      <meta charset="utf-8">
-      <title>Test Test</title>
-    </head>
+<?php 
 
-    <body>
+require_once('../Functions/GeneralFunctions.php');
+$pageTitle = "Home";
 
-        <?php
-        print "<h1>If you can see this, we good</h1>";
-        ?> 
+?>
 
-    </body>
-</html>
+<?php include(COMMON_PATH . '\Header.php'); ?>
 
+<body>
+<div class="container">
+    <h1>Welcome to Algonquin College Online Course Registration</h1>
+    <p>If you have never used this before, you have to <span><a href="NewUser.php">sign up</a></span> first.</p>
+    <p>If you have already signed up, you can <span><a href="Login.php">log in</a></span> now.</p>
+</div>
+</body>
 
+<?php include(COMMON_PATH . '\Footer.php'); ?>
