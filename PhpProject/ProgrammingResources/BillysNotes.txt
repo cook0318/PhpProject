@@ -1,0 +1,3 @@
+A place to make notes on development, to do lists, things to ask each other, etc.
+Others will see this file when you push to your remote branch.
+Only to be used by Billy.
