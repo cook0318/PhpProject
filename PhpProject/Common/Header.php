@@ -26,12 +26,12 @@
             </div>
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav">
-                    <li class="<?php if($activePage == "Index") { echo "active"; } ?>"><a href="Index.php">Home</a></li>
-                    <li class="<?php if($activePage == "MyFriends") { echo "active"; } ?>"><a href="MyFriends.php">My Friends</a></li>
-                    <li class="<?php if($activePage == "MyAlbums") { echo "active"; } ?>"><a href="MyAlbums.php">My Albums</a></li>
-                    <li class="<?php if($activePage == "MyPictures") { echo "active"; } ?>"><a href="MyPictures.php">My Pictures</a></li>
-                    <li class="<?php if($activePage == "UploadPictures") { echo "active"; } ?>"><a href="UploadPictures.php">Upload Pictures</a></li>
-                    <li class="<?php if($activePage == "Login") { echo "active"; } ?>"><a href="Login.php">Log In</a></li>
+                    <li class="<?php if($activePage == "Index") { echo "active disableLink"; } ?>"><a href="Index.php">Home</a></li>
+                    <li class="<?php if($activePage == "MyFriends") { echo "active disableLink"; } ?>"><a href="MyFriends.php">My Friends</a></li>
+                    <li class="<?php if($activePage == "MyAlbums") { echo "active disableLink"; } ?>"><a href="MyAlbums.php">My Albums</a></li>
+                    <li class="<?php if($activePage == "MyPictures") { echo "active disableLink"; } ?>"><a href="MyPictures.php">My Pictures</a></li>
+                    <li class="<?php if($activePage == "UploadPictures") { echo "active disableLink"; } ?>"><a href="UploadPictures.php">Upload Pictures</a></li>
+                    <li class="<?php if($activePage == "Login") { echo "active disableLink"; } ?>"><a href="Login.php">Log In</a></li>
                 </ul>
             </div>
         </div>
