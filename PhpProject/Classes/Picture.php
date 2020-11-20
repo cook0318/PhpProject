@@ -9,7 +9,8 @@ class Picture {
     private $description;
     private $dateAdded;
     
-    function __construct( $albumId, $fileName, $title, $description, $dateAdded) {
+    function __construct($pictureId, $albumId, $fileName, $title, $description, $dateAdded) {
+        $this->pictureId = $pictureId;
         $this->albumId = $albumId;
         $this->fileName = $fileName;
         $this->title = $title;

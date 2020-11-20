@@ -1,6 +1,13 @@
 <?php
 
 // Functions requiring database access.
+
+foreach (glob("Classes/*.php") as $filename)
+{
+    include $filename;
+}
+
+
 $dbConnection = null;
 
 // The first time this function is called, it creates and returns a PDO object. It then
@@ -16,16 +23,58 @@ function Connect(){
     return $dbConnection;
 }
 
-function GetAllAccessibilityCodes(){
+// Returns a list of all Accessibility objects.
+function getAllAccessibilityCodes(){
+    $accessibilityCodes = [];
     $PDO = Connect();
     $sql = "SELECT Accessibility_Code, Description FROM Accessibility";
     $preparedStatement = $PDO->prepare($sql);
     $preparedStatement->execute();
     foreach($preparedStatement as $row){
-        
+        $accessibilityCode = new Accessibility($row['accessibility_code'], $row['description']);
+        $accessibilityCodes[] = $accessibilityCode;
     }
+    
+    return $accessibilityCodes;
 }
 
+// Returns a list of Album objects owned by a given user ID.
+function  getAllUserAlbums($userId){
+    $albums = [];
+    $PDO = Connect();
+    $sql = "SELECT Album_Id, Title, Description, Date_Updated, Accessibility_Code "
+                . "FROM Album  WHERE Owner_Id = :userId";
+    $preparedStatement = $PDO->prepare($sql);
+    $preparedStatement->execute(['userId' => $userId]);
+    foreach($preparedStatement as $row){
+        $album = new Album($row['album_id'], $row['title'], $row['description'], 
+                $row['date_updated'], $row['owner_id'], $row['accessibility_code']);
+        $albums[] = $album;
+    }
+    
+    return $albums;
+}
+
+// Saves an Album object. Returns true if the save was successful, and false if
+// the save was unsuccessful.
+// Because AlbumId is auto-generated in the table, pass the album object with any 
+// album ID such as 0, -1, or null.
+function saveAlbum($album){
+    $title = $album->getTitle();
+    $description = $album->getDescription();
+    $ownerId = $album->getOwnerId();
+    $dateUpdated = $album->getDateUpdated();
+    $accessibilityCode = $album->getAccessibilityCode();
+    
+    $PDO = Connect();
+    $sql = "INSERT INTO Album (Title, Description, Owner_Id, Date_Updated, Accessibility_Code) "
+            . "VALUES( :title, :description, :userId, :dateUpdated, :accessibilityCode)";
+    $preparedStatement = $PDO->prepare($sql);
+    $success = $preparedStatement->execute(['title' => $title, 'description' => $description,
+        'userId' => $ownerId, 'dateUpdated' => $dateUpdated, 'accessibilityCode' => $accessibilityCode]);
+    
+    return $success;
+}
 
 
 ?>
@@ -33,18 +82,6 @@ function GetAllAccessibilityCodes(){
 
 
 
-//Get all accessibility code
-
-	$sql = "SELECT Accessibility_Code, Description FROM Accessibility";
-
-//Get albums for a user
-
-	$sql = "SELECT Album_Id, Title, Description, Date_Updated, Accessibility_Code "
-                . "FROM Album  WHERE Owner_Id = :userId";
-				
-//Save an album
-
-	$sql = "INSERT INTO Album (Title, Description, Owner_Id, Date_Updated, Accessibility_Code) VALUES( :title, :description, :userId, :dateUpdated, :accessibilityCode)";
 
 //Update an album's accessibility
 

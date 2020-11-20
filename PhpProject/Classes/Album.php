@@ -9,7 +9,8 @@ class Album {
     private $ownerId;
     private $accessibilityCode;
     
-        function __construct($title, $description, $dateUpdated, $ownerId, $accessibilityCode) {
+        function __construct($albumId, $title, $description, $dateUpdated, $ownerId, $accessibilityCode) {
+        $this->albumId = $albumId;
         $this->title = $title;
         $this->description = $description;
         $this->dateUpdated = $dateUpdated;

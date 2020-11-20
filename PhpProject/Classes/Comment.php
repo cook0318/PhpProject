@@ -8,7 +8,8 @@ class Comment {
     private $commentText;
     private $date;
     
-    function __construct($authorId, $pictureId, $commentText, $date) {
+    function __construct($commentId, $authorId, $pictureId, $commentText, $date) {
+        $this->comment = $commentId;
         $this->authorId = $authorId;
         $this->pictureId = $pictureId;
         $this->commentText = $commentText;
