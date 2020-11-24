@@ -7,11 +7,10 @@ class User {
     private $phone;
     private $password;
     
-    function __construct($UserId, $Name, $Phone, $Password) {
+    function __construct($UserId, $Name, $Phone) {
         $this->userID = $UserId;
         $this->name = $Name;
         $this->phone = $Phone;
-        $this->password = $Password;
     }
 
     function getUserId() {

@@ -27,7 +27,7 @@ function Connect(){
 function getAllAccessibilityCodes(){
     $accessibilityCodes = [];
     $PDO = Connect();
-    $sql = "SELECT Accessibility_Code, Description FROM Accessibility";
+    $sql = "SELECT accessibility_code, description FROM Accessibility";
     $preparedStatement = $PDO->prepare($sql);
     $preparedStatement->execute();
     foreach($preparedStatement as $row){
@@ -42,8 +42,8 @@ function getAllAccessibilityCodes(){
 function  getAllUserAlbums($userId){
     $albums = [];
     $PDO = Connect();
-    $sql = "SELECT Album_Id, Title, Description, Date_Updated, Accessibility_Code "
-                . "FROM Album  WHERE Owner_Id = :userId";
+    $sql = "SELECT album_id, title, description, date_updated, accessibility_code "
+                . "FROM Album  WHERE owner_id = :userId";
     $preparedStatement = $PDO->prepare($sql);
     $preparedStatement->execute(['userId' => $userId]);
     foreach($preparedStatement as $row){
@@ -55,19 +55,11 @@ function  getAllUserAlbums($userId){
     return $albums;
 }
 
-// Saves an Album object. Returns true if the save was successful, and false if
+// Saves an Album. Returns true if the save was successful, and false if
 // the save was unsuccessful.
-// Because AlbumId is auto-generated in the table, pass the album object with any 
-// album ID such as 0, -1, or null.
-function saveAlbum($album){
-    $title = $album->getTitle();
-    $description = $album->getDescription();
-    $ownerId = $album->getOwnerId();
-    $dateUpdated = $album->getDateUpdated();
-    $accessibilityCode = $album->getAccessibilityCode();
-    
+function saveAlbum($title, $description, $ownerId, $dateUpdated, $accessibilityCode){    
     $PDO = Connect();
-    $sql = "INSERT INTO Album (Title, Description, Owner_Id, Date_Updated, Accessibility_Code) "
+    $sql = "INSERT INTO Album (title, description, owner_Id, date_updated, accessibility_code) "
             . "VALUES( :title, :description, :userId, :dateUpdated, :accessibilityCode)";
     $preparedStatement = $PDO->prepare($sql);
     $success = $preparedStatement->execute(['title' => $title, 'description' => $description,
@@ -76,85 +68,224 @@ function saveAlbum($album){
     return $success;
 }
 
+// Updates an album's accessibility code. Returns true if the update was successful, and false if
+// the update was unsuccessful.
+function updateAlbumAccessibility($accessibilityCode, $albumId){
+    $PDO = Connect();
+    $sql = "UPDATE Album SET accessibility_code = :accessibilityCode WHERE album_id = :albumId";
+    $preparedStatement = $PDO->prepare($sql);
+    $success = $preparedStatement->execute(['accessibilityCode' => $accessibilityCode, 'albumId' => $albumId]);
+    
+    return $success;
+}
+
+// Returns a user object given an ID and Password, or returns null if the ID and password do not match.
+function getUserFromIdAndPassword($id, $password){
+    $user = null;
+    $PDO = Connect();
+    $sql = "SELECT userId, name, phone FROM User WHERE userId = :userId AND password = :password";
+    $preparedStatement = $PDO->prepare($sql);
+    if($preparedStatement->execute(['userId' => $id, 'password' => $password])){
+        $row = $preparedStatement->fetch(PDO::FETCH_ASSOC);
+        $user = new User($id, $row['Name'], $row['Phone'], $password);
+    }
+    
+    return $user;
+}
+
+
+// Returns a user object given an ID, or returns null if the ID does not exist.
+function getUserFromID($id){
+    $user = null;
+    $PDO = Connect();
+    $sql = "SELECT userId, name, phone FROM User WHERE userId = :userId";
+    $preparedStatement = $PDO->prepare($sql);
+    if($preparedStatement->execute(['userId' => $id])){
+        $row = $preparedStatement->fetch(PDO::FETCH_ASSOC);
+        $user = new User($id, $row['name'], $row['phone']);
+    }
+    
+    return $user;
+}
+
+// Saves a user to the database. Returns true if save successful, otherwise false.
+function createUser($id, $name, $phone, $password){
+    $PDO = Connect();
+    $sql = "INSERT INTO User VALUES( :userId, :name, :phone, :password)";
+    $preparedStatement = $PDO->prepare($sql);
+    $success = $preparedStatement->execute(['userdId' => $id, 'name' => $name, 'phone' => $phone, 'password' => $password]);
+    
+    return $success;
+}
+
+// Saves a comment to the database. Returns true if save successful, otherwise false.
+function createComment($commenterId, $pictureId, $commentText, $date){
+    $PDO = Connect();
+    $sql = "INSERT INTO Comment VALUES(null, :authorId, :pictureId, :commentText, :date)";
+    $preparedStatement = $PDO->prepare($sql);
+    $success = $preparedStatement->execute(['authorId' => $commenterId, 'pictureId' =>
+        $pictureId, 'commentText' => $commentText, 'date' => $date]);
+    
+    return $success;
+}
+
+// Gets all comments for a given photo ID. 
+//Returns a list in format [Comment Author as a User Object, Comment Object]
+function getComments($pictureId){
+    $result = [];
+    $PDO = Connect();
+    $sql = "SELECT comment_id, comment_text, date, user_id, name, phone FROM comment "
+            . "INNER JOIN User ON Comment.author_id = User.user_id WHERE picture_id = :pictureId";
+    $preparedStatement = $PDO -> prepare($sql);
+    $preparedStatement->execute(['pictureId' => $pictureId]);
+    foreach($preparedStatement as $row){
+        $userAndComment = [];
+        $user = new User($row['user_id'], $row['name'], $row['phone']);
+        $comment = new Comment($row['comment_id'], $row['author_id'], $pictureId, $row['comment_text'], $row['date']);
+        $userAndComment[] = $user;
+        $userAndComment[] = $comment;
+        $result[] = $userAndComment;
+    }
+    
+    return result;
+}
+
+// Saves a picture to the database. Returns true if successful or false otherwise.
+function savePicture($albumId, $fileName, $title, $description, $dateAdded){
+    $PDO = Connect();
+    $sql = "INSERT INTO Picture (album_id, file_name, title, description, date_added)"
+            . " VALUES( :albumId, :fileName, :title, :description, :dateAdded)";
+    $preparedStatement = $PDO->prepare($sql);
+    $success = $preparedStatement->execute(['albumId' => $albumId, 'fileName' => $fileName, 'title' => $title,
+        'description' => $description, 'dateAdded' => $dateAdded]);
+    
+    return $success;
+}
+
+// Deletes a pictures comments and then deletes the photo.
+function deletePicture($pictureId){
+    $PDO = Connect();
+    $sql = "DELETE FROM Comment WHERE picture_id = :pictureId";
+    $preparedStatement = $PDO->prepare($sql);
+    $success = $preparedStatement->execute(['pictureId' => $pictureId]);
+    if($success){
+        $sql1 = "DELETE FROM Picture WHERE picture_id = :pictureId";
+        $preparedStatement2 = $PDO->prepare($sql1);
+        $success = $preparedStatement2->execute(['pictureId' => $pictureId]);
+    }
+    
+    // EVENTUALLY ADD CODE TO ACTUALLY DELETE THE FILE
+    
+    return $success;
+}
+
+// Gets a list of picture objects given an album Id.
+function getAlbumPictures($albumId){
+    $pictures = [];
+    $PDO = Connect();
+    $sql = "SELECT picture_id, file_name, title, description, date_added FROM Picture WHERE album_id = :albumId";
+    $preparedStatement = $PDO->prepare($sql);
+    $preparedStatement->execute(['albumId' => $albumId]);
+    foreach($preparedStatement as $row){
+        $picture = new Picture($row['picture_id'], $albumId, $row['file_name'], $row['Title'], $row['description'], $row['date_added']);
+        $pictures[] = $picture;
+    }
+    
+    return $pictures;
+}
+
+// Creates a friend request. Returns true if request was successful or false otherwise.
+function createFriendRequest($userId, $requesteeId){
+    $PDO = Connect();
+    $sql = "INSERT INTO Friendship VALUES( :userId, :requesteeId, 'request')";
+    $preparedStatement = $PDO->prepare($sql);
+    $success = $preparedStatement->execute(['userId' => $userId, 'requesteeId' => $requesteeId]);
+    
+    return $success;
+}
+
+// Accepts a friend request. Returns true if accept was successful or false otherwise.
+function acceptFriendRequest($userId, $requesterId){
+    $PDO = Connect();
+    $sql = "UPDATE Friendship SET Status = 'accepted' WHERE friend_requester_id = :requesterId AND friend_requestee_id = :userId";
+    $preparedStatement = $PDO->prepare($sql);
+    $success = $preparedStatement->execute(['userId' => $userId, 'requesterId' => $requesterId]);
+    
+    return $success;
+}
+
+// Deletes a current friend of a user. Returns true if delete was successful or false otherwise.
+function deleteFriend($userId, $friendId){
+    $PDO = Connect();
+    $sql = "DELETE FROM Friendship "
+                . "WHERE ((friend_requester_id = :userId AND friend_requestee_id= :friendId) "
+                . "  OR (friend_requester_id = :friendId AND friend_requestee_id= :userId)) "
+                . "    AND Status='accepted'";
+    $preparedStatement = $PDO->prepare($sql);
+    $success = $preparedStatement->execute(['userId' => $userId, 'friendId' => $friendId]);
+    
+    return $success;
+}
+
+// Denies a friend request. Returns true if deny was success or false otherwise.
+function denyFriendRequest($userId, $requesterId){
+    $PDO = Connect();
+    $sql =  "DELETE FROME Friendship WHERE friend_requester_id = :requesterId AND friend_requestee_id = :userId AND Status='request'";
+    $preparedStatement = $PDO->prepare($sql);
+    $success = $preparedStatement->execute(['userId' => $userId, 'requesterId' => $requesterId]);
+    
+    return $success;
+}
+
+// Returns a list of user objects which are a given user's friends.
+function getAllFriends($userId){
+    $friends = [];
+    $PDO = Connect();
+    $sql = "SELECT friend_requestee_id FROM Friendship "
+                . "WHERE friend_requester_id = :userId AND status = 'accepted'";
+    $preparedStatement = $PDO->prepare($sql);
+    $preparedStatement->execute(['userId' => $userId]);
+    foreach($preparedStatement as $row){
+        $friendId = $row['Friend_Requestee_Id'];
+        $user = getUserFromID($friendId);
+        if(is_null($user) == false){
+            $friends[] = $user;
+        }
+    }
+    
+    $sql1 = "SELECT friend_requester_id FROM Friendship "
+                . "WHERE friend_requestee_id = :userId AND status = 'accepted'";
+    $preparedStatement1 = $PDO->prepare($sql1);
+    $preparedStatement1->execute(['userId' => $userId]);
+    foreach($preparedStatement1 as $row){
+        $friendId = $row['Friend_Requestee_Id'];
+        $user = getUserFromID($friendId);
+        if(is_null($user) == false){
+            $friends[] = $user;
+        }
+    }
+    
+    return $friends;
+}
+
+// Gets a list of User objects who currently have requested the user as a friend.
+function getAllFriendRequests($userId){
+    $friendRequests = [];
+    $PDO = Connect();
+    $sql = "SELECT friend_requester_id FROM Friendship "
+                . "WHERE friend_requestee_id = :userId AND status = 'request'";
+    $preparedStatement = $PDO->prepare($sql);
+    $preparedStatement->execute(['userId' => $userId]);
+    foreach($preparedStatement as $row){
+        $friendId = $row['Friend_RequesterId'];
+        $friendRequester = getUserFromID($friendId);
+        $friendRequests[] = $friendRequester;
+    }
+    
+    return $friendRequests;
+}
 
 ?>
 
 
-
-
-
-//Update an album's accessibility
-
-	$sql = "UPDATE Album SET Accessibility_Code = :accessibilityCode WHERE Album_Id = :albumId";
-
-//Get an user by id and password
-
-	$sql = "SELECT UserId, Name, Phone FROM User WHERE UserId = :userId AND Password = :password";
-
-//Get an user by id
-
-	$sql = "SELECT UserId, Name, Phone FROM User WHERE UserId = :userId";
-
-//Save an user
-
-	$sql = "INSERT INTO User VALUES( :userId, :name, :phone, :password)";
-
-//Save a comment
-
-	$sql = "INSERT INTO Comment VALUES(null, :authorId, :pictureId, :comentText, :date)";
-
-//Get comments and their authors for a picture
-
-	$sql = "SELECT Comment_Id, Comment_Text, Date, UserId, Name, Phone FROM Comment "
-                . "INNER JOIN User ON Comment.Author_Id = User.UserId WHERE Picture_Id = :pictureId";
-				
-//Save a picture
-	
-	$sql = "INSERT INTO Picture (Album_Id, File_Name, Title, Description, Date_Added) VALUES( :albumId, :fileName, :title, :description, :dateAdded)";
-        
-//Delete a picture and all its comments. A picture's comments must be deleted before delete the picture.
-
-	$sql = "DELETE FROM Comment WHERE Picture_Id = :pictureId";
-	$sql1 = "DELETE FROM Picture WHERE Picture_Id = :pictureId";
-	
-//Save a picture
-	
-	$sql = "INSERT INTO Picture (Album_Id, File_Name, Title, Description, Date_Added) VALUES( :albumId, :fileName, :title, :description, :dateAdded)";
-        
-//Get pictures of an album
-
-	$sql = "SELECT Picture_Id, File_Name, Title, Description, Date_Added FROM Picture WHERE Album_Id = :albumId";
-        
-//Save a friend request
-
-	$sql = "INSERT INTO Friendship VALUES( :userId, :requesteeId, 'request')";
-	
-//Accept a friend request
-
-	$sql = "UPDATE Friendship SET Status = 'accepted' WHERE Friend_RequesterId = :requesterId AND Friend_RequesteeId = :userId";
-
-//Delete a friend of a user:
-
-	$sql = "DELETE FROM Friendship "
-                . "WHERE ((Friend_RequesterId = :userId AND Friend_RequesteeId= :friendId) "
-                . "  OR (Friend_RequesterId = :friendId AND Friend_RequesteeId= :userId)) "
-                . "    AND Status='accepted'";	
-				
-//Deny a friend request
-
-	$sql = "DELETE FROME Friendship WHERE Friend_RequesterId = :requesterId AND Friend_RequesteeId = :userId AND Status='request'";
-	
-//Get friends for a user. The first query returns all friends to whom the user initiated the requests.
-//The second query returns all friends whose requests the user accepted. Add the results of the following two queries
-
-	$sql = "SELECT Friend_RequesteeId FROM Friendship "
-                . "WHERE Friend_RequesterId = :userId AND Status = 'accepted'";
-				
-	$sql = "SELECT Friend_RequesterId FROM Friendship "
-                . "WHERE Friend_RequesteeId = :userId AND Status = 'accepted'";
-				
-//Get friend requesters of a user
-
-	$sql = "SELECT Friend_RequesterId FROM Friendship "
-                . "WHERE Friend_RequesteeId = :userId AND Status = 'request'";
-				
+                
