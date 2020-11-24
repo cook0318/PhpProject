@@ -1,5 +1,7 @@
 <?php
 
+// Non-Validating and Non-Database related functions.
+
 session_start();
 
 define('FUNCTIONS_PATH', dirname(__FILE__));        // path to: PhpProject/PhpProject/Functions 
