@@ -2,9 +2,9 @@
 
 // Functions requiring database access.
 
-foreach (glob("Classes/*.php") as $filename)
+foreach (glob("../Classes/*.php") as $filename)
 {
-    include $filename;
+    require_once($filename);
 }
 
 
@@ -16,7 +16,7 @@ $dbConnection = null;
 function Connect(){
     global $dbConnection;
     if(is_null($dbConnection)){
-        $connectionInfo = parse_ini_file('DatabaseInfo/db.ini');
+        $connectionInfo = parse_ini_file('../DatabaseInfo/db.ini');
         extract($connectionInfo);
         $dbConnection = new PDO($dsn, $user, $password);
     }
@@ -98,7 +98,7 @@ function getUserFromIdAndPassword($id, $password){
 function getUserFromID($id){
     $user = null;
     $PDO = Connect();
-    $sql = "SELECT userId, name, phone FROM User WHERE userId = :userId";
+    $sql = "SELECT user_id, name, phone FROM User WHERE user_id = :userId";
     $preparedStatement = $PDO->prepare($sql);
     if($preparedStatement->execute(['userId' => $id])){
         $row = $preparedStatement->fetch(PDO::FETCH_ASSOC);
