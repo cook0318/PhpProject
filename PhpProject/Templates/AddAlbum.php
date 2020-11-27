@@ -63,9 +63,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'){
         $albumTitleError = "  Album title is required.";
     }
 }
-?>
 
-<?php include(COMMON_PATH . '\Header.php'); ?>
+include(COMMON_PATH . '\Header.php'); ?>
 
 <body>
 <div class="container">
@@ -78,7 +77,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'){
             <td><input id='albumTitle' type='text' name='title' value='<?php print($albumTitle)?>'><span class='error'><?php print($albumTitleError)?></span></td>
         </tr>
         <tr>
-            <td><label for='accessibility'>Accessibility:</label></td>
+            <td><label for='accessibility'>Accessible by:</label></td>
             <td>
                 <select type='text' name='accessibility'>
                     <?php print(getAccessibilityDropdown($selectedAccessibility)) ?>

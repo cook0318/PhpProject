@@ -9,7 +9,8 @@
         </div>
     </footer>
     <script src="../Scripts/jquery-2.2.4.min.js" type="text/javascript"></script>
-    <script src="../Scripts/bootstrap.min.js" type="text/javascript"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js" type="text/javascript"></script>
+    
     <script src="../Scripts/main.js" type="text/javascript"></script>
 </body>
 </html>
