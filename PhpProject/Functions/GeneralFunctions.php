@@ -17,6 +17,10 @@ foreach (glob("../Classes/*.php") as $filename)
 
 require_once(FUNCTIONS_PATH . "/DatabaseAccess.php");
 
+function getDefaultPhoto(){
+    return new Picture(0, 0, "NoPhotos.jpg", "No Photo Title", "Filler Photo", strtotime("1 January 1900"));
+}
+
 // Gets the HTML for the selectable Accessibility dropdown on the Create an Album page.
 // Input parameter is the currently selected option, if the form ends up being invalid.
 function getAccessibilityDropdown($selectedAccessibility){
@@ -25,7 +29,7 @@ function getAccessibilityDropdown($selectedAccessibility){
     foreach($accessibilityCodes as $code){
         $selected = "";
         $name = $code->getAccessibilityCode();
-        $optionText = $name == "private" ? "Private - Accessible only by you" : "Shared - Accessible by you and friends";
+        $optionText = $name == "private" ? "Only you" : "You and friends";
         if($name == $selectedAccessibility){
             $selected = "selected";
         }
@@ -34,8 +38,70 @@ function getAccessibilityDropdown($selectedAccessibility){
     }
     
     return $returnHTML;
-    
 }
+
+function getAlbumCards($userId){
+    
+    $albums = getAllUserAlbums($userId);
+    if(count($albums) == 0){
+        return "<br><br><p>You do not currently have any albums.</p>";    
+    }
+    
+    $returnHTML = "<button type='submit' name='submit'>Update Accessibilities</button><div class='card-deck'>";
+    foreach($albums as $album){
+        $albumId = $album->getAlbumId();
+        $pictures = getAlbumPictures($album->getAlbumId());
+        $coverPhoto = $pictures[0];
+        if($coverPhoto == null){
+            $coverPhoto = getDefaultPhoto();
+        }
+        $coverPhotoPath = "../UserPhotos/{$coverPhoto->getFileName()}";
+        if(file_exists($coverPhotoPath)==false){
+            $coverPhotoPath = "../UserPhotos/PhotoUnavailable.jpg";
+        }
+        $coverPhotoTitle = $coverPhoto->getTitle();
+        $albumTitle = $album->getTitle();
+        $albumDescription = $album->getDescription() == null ? "<em>No description</em>" : $album->getDescription();
+        $photoCount = count($pictures) == 1 ? count($pictures) . " photo" : count($pictures) . " photos";
+        $uploadDate = $album->getDateUpdated();
+        $accessibilityDropdown = getAccessibilityDropdown($album->getAccessibilityCode());
+        
+        $card = <<<HEREDOC
+        <div class="col-lg-4 col-sm-6 col-xs-12  d-flex align-items-stretch">
+          <div class='card bg-light mb-3 mt-3'>
+            <img class="card-img-top" src="$coverPhotoPath" alt="$coverPhotoTitle">
+            <div class="card-body">
+                <h5 class="card-title">$albumTitle</h5>
+                <p class="card-text">$albumDescription</p>
+            </div>
+            <div class="card-footer">
+                <p class="card-text">$photoCount</p>
+                <p class="card-text"><b>Uploaded:</b> $uploadDate</p>
+                <p class="card-text"><b>Accessible by:</b> 
+                    <select type='text' name='accessibility' style='font-size: small'>
+                        $accessibilityDropdown
+                    </select>
+                </p>
+                <div class="buttonCardContainer">
+                    <button class="btn btn-primary btn-sm goToAlbumBtn" type="submit" name="goToAlbum$albumId">View Album</button>
+                    <button class="btn btn-danger btn-sm deleteAlbumBtn" type="submit" name="deleteAlbum$albumId">Delete Album</button>
+                </div>
+            </div>
+          </div>
+        </div>
+HEREDOC;
+        $returnHTML .= $card;
+    }
+    
+    $returnHTML .= "</div>";
+    return $returnHTML;
+}
+    
+
+
+
+
+
 
 
 ?>
