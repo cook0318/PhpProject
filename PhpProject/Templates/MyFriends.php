@@ -1,7 +1,12 @@
 <?php 
 
 require_once('../Functions/GeneralFunctions.php');
+
 $pageTitle = "My Friends";
+
+$_SESSION["lastPage"] = "MyFriends";
+
+requireLogin();
 
 ?>
 

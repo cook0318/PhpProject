@@ -1,7 +1,12 @@
 <?php 
 
 require_once('../Functions/GeneralFunctions.php');
+
 $pageTitle = "My Albums";
+
+$_SESSION["lastPage"] = "MyAlbums";
+
+requireLogin();
 
 ?>
 

@@ -7,7 +7,6 @@ foreach (glob("../Classes/*.php") as $filename)
     require_once($filename);
 }
 
-
 $dbConnection = null;
 
 // The first time this function is called, it creates and returns a PDO object. It then
@@ -21,6 +20,12 @@ function Connect(){
         $dbConnection = new PDO($dsn, $user, $password);
     }
     return $dbConnection;
+}
+
+// Escapes Special characters and white spaces, and transform to uppercase (to use for user IDs)
+function idEscape ($str) {
+    $str = str_ireplace(' ', '', $str);
+    return strtoupper(htmlspecialchars($str));
 }
 
 // Returns a list of all Accessibility objects.
@@ -79,20 +84,35 @@ function updateAlbumAccessibility($accessibilityCode, $albumId){
     return $success;
 }
 
-// Returns a user object given an ID and Password, or returns null if the ID and password do not match.
-function getUserFromIdAndPassword($id, $password){
+// Returns TRUE and save User ID in Session["userLogged"] if LogIn is successful. Returns FALSE otherwise.
+function logIn($id, $password){
     $user = null;
     $PDO = Connect();
-    $sql = "SELECT userId, name, phone FROM User WHERE userId = :userId AND password = :password";
+    $sql = "SELECT * FROM `user` WHERE `user_id` = :userId";
     $preparedStatement = $PDO->prepare($sql);
-    if($preparedStatement->execute(['userId' => $id, 'password' => $password])){
-        $row = $preparedStatement->fetch(PDO::FETCH_ASSOC);
-        $user = new User($id, $row['Name'], $row['Phone'], $password);
+    $preparedStatement->execute(['userId' => idEscape($id)]);
+    $row = $preparedStatement->fetch(PDO::FETCH_ASSOC);
+    if(password_verify($password, $row["password"])){
+        $_SESSION["userLogged"] = $row["user_id"];
+        return true;
+    } else {
+        return false;
     }
-    
-    return $user;
 }
 
+// Saves a user to the database. Returns true if save successful, otherwise false.
+function createUser($id, $name, $phone, $password){
+    $PDO = Connect();
+
+    $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+
+    $sql = "INSERT INTO `user` (`user_id`, `name`, `phone`, `password`) VALUES (?, ?, ?, ?)";
+    $preparedStatement = $PDO->prepare($sql);
+    $success = $preparedStatement->execute([idEscape($id), $name, $phone, $hashedPassword]);
+    if($success) { $_SESSION["userLogged"] = idEscape($id); }
+
+    return $success;
+}
 
 // Returns a user object given an ID, or returns null if the ID does not exist.
 function getUserFromID($id){
@@ -100,22 +120,12 @@ function getUserFromID($id){
     $PDO = Connect();
     $sql = "SELECT user_id, name, phone FROM User WHERE user_id = :userId";
     $preparedStatement = $PDO->prepare($sql);
-    if($preparedStatement->execute(['userId' => $id])){
+    if($preparedStatement->execute(['userId' => idEscape($id)])){
         $row = $preparedStatement->fetch(PDO::FETCH_ASSOC);
-        $user = new User($id, $row['name'], $row['phone']);
+        $user = new User($row['user_id'], $row['name'], $row['phone']);
     }
     
     return $user;
-}
-
-// Saves a user to the database. Returns true if save successful, otherwise false.
-function createUser($id, $name, $phone, $password){
-    $PDO = Connect();
-    $sql = "INSERT INTO User VALUES( :userId, :name, :phone, :password)";
-    $preparedStatement = $PDO->prepare($sql);
-    $success = $preparedStatement->execute(['userdId' => $id, 'name' => $name, 'phone' => $phone, 'password' => $password]);
-    
-    return $success;
 }
 
 // Saves a comment to the database. Returns true if save successful, otherwise false.
