@@ -35,6 +35,7 @@ $selectedAccessibility = "";
 $description = "";
 $successMessage = "";
 $albumTitleError = "";
+$albumDescriptionError = "";
 
 // validate on any submit since JS will be submitting the form.
 if ($_SERVER['REQUEST_METHOD'] == 'POST'){
@@ -42,10 +43,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'){
     $selectedAccessibility = $_POST['accessibility'];
     $description = $_POST['description'];
     
-    // check for valid title
-    $validInput = validateCreateNewAlbum($albumTitle);
+    // check for valid title and returns a code indicating error(s) or success.
+    $resultCode = validateCreateNewAlbum($albumTitle, $description);
     
-    if($validInput == true){
+    if($resultCode == 0){
         // save album to DB
         $success = saveAlbum($albumTitle, $description, $userId, Date('Y-m-d'), $selectedAccessibility);
         if($success){
@@ -59,8 +60,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'){
             $successHTML = "<span class='error'>An error has occured.</span>";
         }
     }
-    else{
-        $albumTitleError = "  Album title is required.";
+    
+    if ($resultCode == 1 || $resultCode == 4){
+       $albumTitleError = " Album title required.";
+    }
+    
+    if ($resultCode == 2 || $resultCode == 5){
+       $albumTitleError = " Album title must be fewer than 256 characters.";
+    }
+    
+    if ($resultCode == 3 || $resultCode == 4 || $resultCode == 5){
+       $albumDescriptionError = " Album description must be fewer than 3000 characters.";
     }
 }
 
@@ -86,7 +96,7 @@ include(COMMON_PATH . '\Header.php'); ?>
         </tr>
         <tr>
             <td><label for='description'>Description:</label></td>
-            <td><textarea id='albumDescription' rows='3' cols='30' name='description'><?php print($description)?></textarea></td>
+            <td><textarea id='albumDescription' rows='3' cols='30' name='description'><?php print($description)?></textarea><span class='error'><?php print($albumDescriptionError)?></span></td>
         </tr>
     </table>
         <button class='btn btn-primary' id='submitCreateAlbumButton' type='button' name='submitCreateAlbumButton'>Submit</button>

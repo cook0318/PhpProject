@@ -47,7 +47,7 @@ function getAlbumCards($userId){
         return "<br><br><p>You do not currently have any albums.</p>";    
     }
     
-    $returnHTML = "<button type='submit' name='submit'>Update Accessibilities</button><div class='card-deck'>";
+    $returnHTML = "<a href='AddAlbum.php'>Create an album</a><button class='updateAccessibilitiesBtn' type='submit' name='updateAccessibilities'>Update Accessibilities</button><div class='card-deck'>";
     foreach($albums as $album){
         $albumId = $album->getAlbumId();
         $pictures = getAlbumPictures($album->getAlbumId());
@@ -66,10 +66,12 @@ function getAlbumCards($userId){
         $uploadDate = $album->getDateUpdated();
         $accessibilityDropdown = getAccessibilityDropdown($album->getAccessibilityCode());
         
+        
+        //<img class="card-img-top" src="$coverPhotoPath" alt="$coverPhotoTitle">
         $card = <<<HEREDOC
         <div class="col-lg-4 col-sm-6 col-xs-12  d-flex align-items-stretch">
           <div class='card bg-light mb-3 mt-3'>
-            <img class="card-img-top" src="$coverPhotoPath" alt="$coverPhotoTitle">
+            
             <div class="card-body">
                 <h5 class="card-title">$albumTitle</h5>
                 <p class="card-text">$albumDescription</p>
@@ -78,7 +80,7 @@ function getAlbumCards($userId){
                 <p class="card-text">$photoCount</p>
                 <p class="card-text"><b>Uploaded:</b> $uploadDate</p>
                 <p class="card-text"><b>Accessible by:</b> 
-                    <select type='text' name='accessibility' style='font-size: small'>
+                    <select type='text' name='accessibility$albumId' style='font-size: small'>
                         $accessibilityDropdown
                     </select>
                 </p>
