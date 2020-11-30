@@ -4,8 +4,8 @@
     <title><?php echo $pageTitle; ?></title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="/PhpProject/PhpProject/CSS/bootstrap.min.css" rel="stylesheet" type="text/css"/>
-    <link href="/PhpProject/PhpProject/CSS/Site.css" rel="stylesheet" type="text/css"/>
+    <link href="../CSS/bootstrap.min.css" rel="stylesheet" type="text/css"/>
+    <link href="../CSS/Site.css" rel="stylesheet" type="text/css"/>
 </head>
 <body style="padding-top: 50px; margin-bottom: 60px;">
     <nav class="navbar navbar-default navbar-fixed-top navbar-inverse">

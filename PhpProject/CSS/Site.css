@@ -33,3 +33,5 @@ and open the template in the editor.
 .disableLink {
     pointer-events: none;
 }
+.distinct { color: blue } 
+.success { color: green }
