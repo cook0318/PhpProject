@@ -12,3 +12,10 @@ $("#submitCreateAlbumButton").click(function(){
         this.form.submit();
     }
 });
+
+// Changes the album visualized according to dropDownList change on FriendPictures.php
+$('#friendAlbum').change(function() {
+    var id = this.options[this.selectedIndex].value;
+    $('#albumId').val(id);
+    $(this).closest('form').submit();
+});

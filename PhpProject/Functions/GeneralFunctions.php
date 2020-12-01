@@ -8,9 +8,14 @@ define('FUNCTIONS_PATH', dirname(__FILE__));            // path to: PhpProject/P
 define('PROJECT_PATH', dirname(FUNCTIONS_PATH));        // path to: PhpProject/PhpProject
 define("COMMON_PATH", PROJECT_PATH . '/Common');        // path to: PhpProject/PhpProject/Common
 
-define ('TEMPLATES_URL', (substr($_SERVER['REQUEST_URI'], 0, 32))); // URL path to /PhpProject/Templates
+$public_end = strpos($_SERVER['SCRIPT_NAME'], '/public') + 7;
+$doc_root = substr($_SERVER['SCRIPT_NAME'], 0, $public_end);
+define("WWW_ROOT", $doc_root);
 
-$activePage = substr($_SERVER['REQUEST_URI'], 33, -4); // gets active URI and extracts page name
+$templates_end = strpos($_SERVER['SCRIPT_NAME'], '/Templates') + 10;
+define("TEMPLATES_URL", substr($_SERVER['SCRIPT_NAME'], 0, $templates_end)); // URL path to /PhpProject/Templates
+
+$activePage = substr($_SERVER['REQUEST_URI'], $templates_end + 1, -4); // gets active URI and extracts page name
 
 foreach (glob("../Classes/*.php") as $filename)
 {
