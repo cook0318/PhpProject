@@ -1,30 +1,19 @@
 <?php 
 
-foreach (glob("../Functions/*.php") as $filename)
-{
-    require_once($filename);
-}
-foreach (glob("../Classes/*.php") as $filename)
-{
-    require_once($filename);
-}
+require_once('../Functions/GeneralFunctions.php');
 
-session_start();
-date_default_timezone_set("America/Toronto");
+$pageTitle = "My Albums";
+$_SESSION["lastPage"] = "MyAlbums";
 
-// TESTING PURPOSES:////////////
-$_SESSION['currentUser'] = getUserFromID('user1');
-////////////////////////////////
+// redirect if necessary
+//requireLogin(); // you can comment this out to test your page without making login
 
-// Retrieve session data for currently logged in user.
-if(isset($_SESSION['currentUser']) == false){
-    header('Location: Login.php');
-}
+//$currentUser = getUserFromID($_SESSION['userLogged']); // for testing, use next line
+$currentUser = getUserFromID('user1'); // comment out/delete when not testing.
 
 // general page variables
-$name = $_SESSION['currentUser']->getName();
-$userId = $_SESSION['currentUser']->getUserId();
-$pageTitle = "My Albums";
+$name = $currentUser->getName();
+$userId = $currentUser->getUserId();
 $albums = getAllUserAlbums($userId);
 $updatedAlbums = "";
 
@@ -39,7 +28,7 @@ if(isset($_POST['updateAccessibilities'])){
                     if($currentAccessibilityValue != $selectedValue){
                         if(updateAlbumAccessibility($selectedValue, $albumId)){
                             $albumTitle = $album->getTitle();
-                            $updatedAlbums .= "<li>Successfully updated $albumTitle from $currentAccessibilityValue to $selectedValue.</li>";
+                            $updatedAlbums .= "<li class='success'>Successfully updated $albumTitle from $currentAccessibilityValue to $selectedValue.</li>";
                         }                        
                     }
                 }
