@@ -1,7 +1,12 @@
 <?php 
 
 require_once('../Functions/GeneralFunctions.php');
+
 $pageTitle = "Upload Pictures";
+
+$_SESSION["lastPage"] = "UploadPictures";
+
+requireLogin();
 
 ?>
 

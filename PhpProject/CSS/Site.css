@@ -28,6 +28,11 @@ and open the template in the editor.
     margin: 0px
 }
 .error    { color: red }
+.distinct { color: blue }
+
+.disableLink {
+    pointer-events: none;
+}
 .distinct { color: blue } 
 .success { color: green }
 

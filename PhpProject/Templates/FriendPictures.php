@@ -2,11 +2,13 @@
 
 require_once('../Functions/GeneralFunctions.php');
 
-$pageTitle = "My Friends";
+$pageTitle = "Friend Pictures";
 
-$_SESSION["lastPage"] = "MyFriends";
+$_SESSION["lastPage"] = "FriendPictures";
 
 requireLogin();
+
+$user = getUserFromID($_SESSION['userLogged']);
 
 ?>
 
@@ -14,7 +16,7 @@ requireLogin();
 
 <body>
 <div class="container">
-    <h1>My Friends</h1>
+    <h1>My Pictures</h1>
 </div>
 </body>
 
