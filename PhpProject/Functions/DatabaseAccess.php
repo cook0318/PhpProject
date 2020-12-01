@@ -25,7 +25,7 @@ function Connect(){
 // Escapes Special characters and white spaces, and transform to uppercase (to use for user IDs)
 function idEscape ($str) {
     $str = str_ireplace(' ', '', $str);
-    return strtoupper(htmlspecialchars($str));
+    return htmlspecialchars($str);
 }
 
 // Returns a list of all Accessibility objects.
@@ -139,25 +139,17 @@ function createComment($commenterId, $pictureId, $commentText, $date){
     return $success;
 }
 
-// Gets all comments for a given photo ID. 
-//Returns a list in format [Comment Author as a User Object, Comment Object]
 function getComments($pictureId){
-    $result = [];
+    $comments = [];
     $PDO = Connect();
-    $sql = "SELECT comment_id, comment_text, date, user_id, name, phone FROM comment "
-            . "INNER JOIN User ON Comment.author_id = User.user_id WHERE picture_id = :pictureId";
+    $sql = "SELECT * FROM comment WHERE picture_id = :pictureId ORDER BY date DESC";
     $preparedStatement = $PDO -> prepare($sql);
     $preparedStatement->execute(['pictureId' => $pictureId]);
     foreach($preparedStatement as $row){
-        $userAndComment = [];
-        $user = new User($row['user_id'], $row['name'], $row['phone']);
         $comment = new Comment($row['comment_id'], $row['author_id'], $pictureId, $row['comment_text'], $row['date']);
-        $userAndComment[] = $user;
-        $userAndComment[] = $comment;
-        $result[] = $userAndComment;
-    }
-    
-    return result;
+        $comments[] = $comment;
+    }    
+    return $comments;
 }
 
 // Saves a picture to the database. Returns true if successful or false otherwise.
@@ -197,11 +189,23 @@ function getAlbumPictures($albumId){
     $preparedStatement = $PDO->prepare($sql);
     $preparedStatement->execute(['albumId' => $albumId]);
     foreach($preparedStatement as $row){
-        $picture = new Picture($row['picture_id'], $albumId, $row['file_name'], $row['Title'], $row['description'], $row['date_added']);
+        $picture = new Picture($row['picture_id'], $albumId, $row['file_name'], $row['title'], $row['description'], $row['date_added']);
         $pictures[] = $picture;
     }
     
     return $pictures;
+}
+
+// Gets a list of picture objects given an album Id.
+function getPictureById($pictureId){
+    $PDO = Connect();
+    $sql = "SELECT * FROM Picture WHERE picture_id = :pictureId";
+    $preparedStatement = $PDO->prepare($sql);
+    if($preparedStatement->execute(['pictureId' => $pictureId])){
+        $row = $preparedStatement->fetch(PDO::FETCH_ASSOC);
+        $picture = new Picture($row['picture_id'], $row['album_id'], $row['file_name'], $row['title'], $row['description'], $row['date_added']);
+    }    
+    return $picture;
 }
 
 // Creates a friend request. Returns true if request was successful or false otherwise.
