@@ -59,7 +59,7 @@ if(isPostRequest() && $_POST["newCommentAdded"] == 1) {
     if(validateComment($_POST["newComment"])) { $error["comment"] = validateComment($_POST["newComment"]); }
 
     if(empty($error)){
-        createComment($user->getUserId(), $_SESSION['pictureSelectedId'], $_POST["newComment"], date("Y-m-d"));
+        createComment($user->getUserId(), $_SESSION['pictureSelectedId'], $_POST["newComment"], date("Y-m-d H:i:s"));
         header("Refresh:0");
     }
 }

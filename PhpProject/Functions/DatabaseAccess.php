@@ -142,11 +142,11 @@ function createComment($commenterId, $pictureId, $commentText, $date){
 function getComments($pictureId){
     $comments = [];
     $PDO = Connect();
-    $sql = "SELECT * FROM comment WHERE picture_id = :pictureId ORDER BY date DESC";
+    $sql = "SELECT *, DATE(date) as `onlydate` FROM comment WHERE picture_id = :pictureId ORDER BY date DESC";
     $preparedStatement = $PDO -> prepare($sql);
     $preparedStatement->execute(['pictureId' => $pictureId]);
     foreach($preparedStatement as $row){
-        $comment = new Comment($row['comment_id'], $row['author_id'], $pictureId, $row['comment_text'], $row['date']);
+        $comment = new Comment($row['comment_id'], $row['author_id'], $pictureId, $row['comment_text'], $row['onlydate']);
         $comments[] = $comment;
     }    
     return $comments;
