@@ -28,6 +28,7 @@ if($hasAlbums) {
 
     // Saves album selected in SESSION / creates default value if fresh session
     if(!empty($_POST['albumId'])){
+        unset($_SESSION['pictureSelectedId']);
         $_SESSION['albumSelected'] = $_POST['albumId'];
     }
     if(!isset($_SESSION['albumSelected'])){

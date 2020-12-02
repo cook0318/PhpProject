@@ -331,7 +331,5 @@ function getPictureById($pictureId){
         $picture = new Picture($row['picture_id'], $row['album_id'], $row['file_name'], $row['title'], $row['description'], $row['date_added']);
     }    
     return $picture;
+}
 ?>
-
-
-                

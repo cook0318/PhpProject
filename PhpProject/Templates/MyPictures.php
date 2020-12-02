@@ -11,7 +11,7 @@ if($_SESSION["lastPage"] != "MyPictures") {
 
 $_SESSION["lastPage"] = "MyPictures";
 
-//requireLogin();
+requireLogin();
 
 $user = getUserFromID($_SESSION['userLogged']);
 
@@ -21,6 +21,7 @@ $hasAlbums = count($userAlbums) > 0 ? true : false;
 if($hasAlbums){    
     // Saves album selected in SESSION / creates default value if fresh session
     if(!empty($_POST['albumId'])){
+        unset($_SESSION['pictureSelectedId']);
         $_SESSION['albumSelected'] = $_POST['albumId'];
     }
     if(!isset($_SESSION['albumSelected'])){

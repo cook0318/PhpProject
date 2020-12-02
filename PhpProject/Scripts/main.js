@@ -33,9 +33,7 @@ $('#friendAlbum').change(function() {
 $('.thumbnail-item').each(function() {
     $(this).click(function() {
         var pictureId = $(this).attr("id");
-        var albumId = $(this).attr("album-id");
         $('#pictureId').val(pictureId);
-        $('#pictureAlbumId').val(albumId);
         $(this).closest('form').submit();
         console.log(id);
     })
