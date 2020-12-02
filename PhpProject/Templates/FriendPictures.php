@@ -4,6 +4,11 @@ require_once('../Functions/GeneralFunctions.php');
 
 $pageTitle = "Friend Pictures";
 
+if($_SESSION["lastPage"] != "FriendPictures") {
+    unset($_SESSION['albumSelected']);
+    unset($_SESSION['pictureSelectedId']);
+}
+
 $_SESSION["lastPage"] = "FriendPictures";
 
 requireLogin();
@@ -17,34 +22,46 @@ $friend = getUserFromID('U0002');
 $friendName = $friend->getName();
 $friendId = $friend->getUserId();
 $friendAlbums = getAllUserAlbums($friendId);
+$hasAlbums = count($friendAlbums) > 0 ? true : false;
 
-// Saves album selected in SESSION / creates default value if fresh session
-if(!empty($_POST['albumId'])){
-    $_SESSION['albumSelected'] = $_POST['albumId'];
-}
-if(!isset($_SESSION['albumSelected'])){
-    $_SESSION['albumSelected'] = $_POST['albumId'] ?? $friendAlbums[0]->getAlbumId();
-}
-// Gets all pictures from album selected
-$albumPictures = getAlbumPictures($_SESSION['albumSelected']);
+if($hasAlbums) {
 
-
-// Saves picture selected in SESSION / creates default value if fresh session
-if(!empty($_POST['pictureId'])){
-    $_SESSION['pictureSelectedId'] = $_POST['pictureId'];
+    // Saves album selected in SESSION / creates default value if fresh session
+    if(!empty($_POST['albumId'])){
+        $_SESSION['albumSelected'] = $_POST['albumId'];
+    }
+    if(!isset($_SESSION['albumSelected'])){
+        $_SESSION['albumSelected'] = $_POST['albumId'] ?? $friendAlbums[0]->getAlbumId();
+    }
+    // Gets all pictures from album selected
+    $albumPictures = getAlbumPictures($_SESSION['albumSelected']);
+    
+    
+    // Saves picture selected in SESSION / creates default value if fresh session
+    if(!empty($_POST['pictureId'])){
+        $_SESSION['pictureSelectedId'] = $_POST['pictureId'];
+    }
+    if(!isset($_SESSION['pictureSelectedId'])){
+        $_SESSION['pictureSelectedId'] = $_POST['pictureId'] ?? $albumPictures[0]->getPictureId();
+    }
+    // Gets picture selected and its comments
+    $pictureSelected = getPictureById($_SESSION['pictureSelectedId']); // Class picture selected
+    $pictureComments = getComments($_SESSION['pictureSelectedId']); // Comments picture selected
 }
-if(!isset($_SESSION['pictureSelectedId'])){
-    $_SESSION['pictureSelectedId'] = $_POST['pictureId'] ?? $albumPictures[0]->getPictureId();
-}
-// Gets picture selected and its comments
-$pictureSelected = getPictureById($_SESSION['pictureSelectedId']); // Class picture selected
-$pictureComments = getComments($_SESSION['pictureSelectedId']); // Comments picture selected
 
+$comment = $_POST["newComment"] ?? '';
 
 // Saves new comments
 if(isPostRequest() && $_POST["newCommentAdded"] == 1) {
-    createComment($user->getUserId(), $_SESSION['pictureSelectedId'], $_POST["newComment"], date("Y-m-d"));
-    header("Refresh:0");
+    $error = [];
+    
+    //validates input
+    if(validateComment($_POST["newComment"])) { $error["comment"] = validateComment($_POST["newComment"]); }
+
+    if(empty($error)){
+        createComment($user->getUserId(), $_SESSION['pictureSelectedId'], $_POST["newComment"], date("Y-m-d"));
+        header("Refresh:0");
+    }
 }
 
 ?>
@@ -54,18 +71,20 @@ if(isPostRequest() && $_POST["newCommentAdded"] == 1) {
 <body>
 <div class="container">
     <h1 class="text-center m-0-p-10 m-b-10"><?php echo $friendName; ?>'s Pictures</h1>
+    <?php if($hasAlbums) { ?> <!-- Page will be displayed case there are albums to be shown -->
     <div class="row">
         <div class="col-9">
             <div id="albumChoice m-0-p-10">
                 <form action="" method="post"> <!-- Dropdown List of Albums to select -->
                     <select name="friendAlbum" id="friendAlbum" class="form-control">
-                        <?php foreach($friendAlbums as $a) { ?>
+                        <?php foreach($friendAlbums as $a) { 
+                            if($a->getAccessibilityCode() == "shared") { ?>
                             <option value="
                             <?php echo $a->getAlbumId(); ?>"
                             <?php if($a->getAlbumId() == $_SESSION['albumSelected']) { echo "selected"; } ?>
                             ><?php echo $a->getTitle() . " - updated on " . $a->getDateUpdated(); ?>
                             </option>
-                        <?php } ?>
+                        <?php }} ?>
                     </select>
                     <input type="text" name="albumId" id="albumId" class="hidden" value="">
                 </form>
@@ -117,13 +136,19 @@ if(isPostRequest() && $_POST["newCommentAdded"] == 1) {
 
             <form action="" method="post"> <!-- Comment box - to submit new comments -->
                 <div class="m-0-p-10">
-                    <textarea name="newComment" id="newComment" class="form-control" placeholder="Leave comment..."></textarea>
+                    <textarea name="newComment" id="newComment" class="form-control" placeholder="Leave comment..."><?php echo $comment; ?></textarea>
                 </div>
                 <input type="text" name="newCommentAdded" id="newCommentAdded" class="hidden" value="0">
+                <p class="error"><?php echo $error["comment"]; ?></p>
                 <input type="submit" id="addComment" class="btn btn-primary" value="Add Comment">
             </form>
         </div>
     </div>
+
+    <?php } else { ?> <!-- Page will be displayed case there are NO albums to be shown -->
+        <p class="text-center m-0-p-10 m-b-10">There are no albums to be shown.</p>
+    <?php }?>
+
 </div>
 </body>
 

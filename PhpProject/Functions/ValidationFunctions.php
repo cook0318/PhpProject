@@ -21,15 +21,19 @@ function validateCreateNewAlbum($albumTitle){
 function validateId ($id) {
     $PDO = Connect();
 
-    if(notEmpty($id)) {            
-        $sql = 'SELECT COUNT(*) as num FROM User WHERE user_id = :userId';
-        $preparedStatement = $PDO->prepare($sql);
-        $preparedStatement->execute(['userId' => idEscape($id)]);
-
-        $row = $preparedStatement->fetch(PDO::FETCH_ASSOC);
-        
-        if($row['num'] > 0) {
-            return "A user with this ID has already signed up";
+    if(notEmpty($id)) {
+        if (strlen($id) <= 16) {
+            $sql = 'SELECT COUNT(*) as num FROM User WHERE user_id = :userId';
+            $preparedStatement = $PDO->prepare($sql);
+            $preparedStatement->execute(['userId' => idEscape($id)]);
+            
+            $row = $preparedStatement->fetch(PDO::FETCH_ASSOC);
+            
+            if($row['num'] > 0) {
+                return "A user with this ID has already signed up";
+            }            
+        } else {
+            return "User ID cannot exceed 16 characters.";
         }
     } else {
         return "User ID cannot be blank.";
@@ -41,6 +45,9 @@ function validateId ($id) {
 function validateName ($name) {
     if(!notEmpty($name)) {
         return "Name cannot be blank.";
+    }
+    if (strlen($name) > 256) {
+        return "Name cannot exceed 256 characters.";
     }
 }
 
@@ -61,9 +68,9 @@ function validatePhone ($phone) {
 // Returns 0 if valid, or the respective error if an error exists.
 function validatePassword ($password) {
     if(notEmpty($password)){
-        $regex = "/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{6,}$/";
+        $regex = "/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{6,256}$/";
         if (!preg_match($regex, $password)) {
-            return "Password must have at least 6 characters, contain at least one upper case, one lower case and one number.";
+            return "Password must have between 6 and 256 characters, contain at least one upper case, one lower case and one number.";
         } 
     } else {
         return "Password cannot be blank.";
@@ -79,6 +86,18 @@ function validateConfirmPassword ($password, $confirmPassword) {
         } 
     } else {
         return "Password confirmation cannot be blank.";
+    }
+}
+
+// Checks if new Comment is not empty and has the correct length.
+// Returns 0 if valid, or the respective error if an error exists.
+function validateComment ($comment) {
+    if(notEmpty($comment)){            
+        if (strlen($comment) > 3000) {
+            return "Your comment is too long.";
+        } 
+    } else {
+        return "Comment cannot be blank.";
     }
 }
 
