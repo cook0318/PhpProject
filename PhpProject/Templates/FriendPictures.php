@@ -17,7 +17,12 @@ $user = getUserFromID($_SESSION['userLogged']);
 
 // for testing - start
 $friend = getUserFromID('U0002');
+//$friend = getUserFromID(idEscape($_GET['id']));
 // for testing - end
+
+if(getFriendshipStatus($user->getUserId(), $friend->getUserId()) != "accepted") {
+    header('Location: ' . TEMPLATES_URL . "/MyFriends.php");
+}
 
 $friendName = $friend->getName();
 $friendId = $friend->getUserId();

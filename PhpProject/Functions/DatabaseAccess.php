@@ -332,4 +332,17 @@ function getPictureById($pictureId){
     }    
     return $picture;
 }
+
+// Gets friendship status
+function getFriendshipStatus($userLoggedID, $friendID){
+    $PDO = Connect();
+    $sql = "SELECT * FROM `friendship` WHERE `friend_requester_id` = :userID and `friend_requestee_id` = :friendID";
+    $preparedStatement = $PDO->prepare($sql);
+    if($preparedStatement->execute(['userID' => idEscape($userLoggedID), 'friendID' => idEscape($friendID)])){
+        $row = $preparedStatement->fetch(PDO::FETCH_ASSOC);
+        $result = $row['status'];
+    }
+    
+    return $result;
+}
 ?>
