@@ -21,7 +21,7 @@
         </button>
             
         <div class="collapse navbar-collapse" id="navbarText">
-            <ul class="navbar-nav mr-auto"> <!-- was just nav before-->            
+            <ul class="navbar-nav mr-auto">         
                 <li class="nav-item <?php if($activePage == "Index") { echo "active disableLink"; } ?>"><a class="nav-link" href="Index.php">Home</a></li>
                 <li class="nav-item <?php if($activePage == "MyFriends") { echo "active disableLink"; } ?>"><a class="nav-link" href="MyFriends.php">My Friends</a></li>
                 <li class="nav-item <?php if($activePage == "MyAlbums") { echo "active disableLink"; } ?>"><a class="nav-link" href="MyAlbums.php">My Albums</a></li>

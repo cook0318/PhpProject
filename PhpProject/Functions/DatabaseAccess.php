@@ -22,7 +22,7 @@ function Connect(){
     return $dbConnection;
 }
 
-// Escapes Special characters and white spaces, and transform to uppercase (to use for user IDs)
+// Escapes Special characters and white spaces.
 function idEscape ($str) {
     $str = str_ireplace(' ', '', $str);
     return htmlspecialchars($str);

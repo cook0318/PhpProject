@@ -5,15 +5,40 @@ require_once(FUNCTIONS_PATH . "/DatabaseAccess.php");
 
 // Functions that validate user inputs.
 
-// Checks if Album Title is valid (not empty).
-// Returns true if valid, else false.
-function validateCreateNewAlbum($albumTitle){
-    $valid = true;
+// Checks if Album Title and Description are valid (not empty and within character limit).
+// Returns a success or error code:
+// 0 : valid
+// 1 : no title
+// 2 : title too long
+// 3 : description too long
+// 4 : no title, description too long
+// 5 : both too long
+function validateCreateNewAlbum($albumTitle, $albumDescription){
+    $code = 0;
+    
     if(is_null($albumTitle) || trim($albumTitle) == ""){
-        $valid = false;
+        $code = 1;
+        if(strlen($albumDescription) >= 3000){
+            $code = 4;
+        }
+        
+        return $code;
     }
     
-    return $valid;
+    if(strlen($albumTitle) >= 256){
+        $code = 2;
+        if(strlen($albumDescription) >= 3000){
+            $code = 5;
+        }
+        
+        return $code;
+    }
+    
+    if(strlen($albumDescription) >= 3000){
+        $code = 3;
+    }
+    
+    return $code;
 }
 
 // Checks if new ID is not empty and not duplicate.
