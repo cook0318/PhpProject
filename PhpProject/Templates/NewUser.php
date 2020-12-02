@@ -13,11 +13,11 @@ if(isPostRequest()) {
     $errors = [];
     
     //validates inputs
-    if(validateId($id)) { $errors["id"] = ValidateId($id); }
-    if(validateName($name)) { $errors["name"] = ValidateName($name); }
-    if(validatePhone($phoneNumber)) { $errors["phone"] = ValidatePhone($phoneNumber); }
-    if(validatePassword($password)) { $errors["password"] = ValidatePassword($password); }
-    if(validateConfirmPassword($password, $confirmPassword)) { $errors["confirmPassword"] = ValidateConfirmPassword($password, $confirmPassword); }
+    if(validateId($id)) { $errors["id"] = validateId($id); }
+    if(validateName($name)) { $errors["name"] = validateName($name); }
+    if(validatePhone($phoneNumber)) { $errors["phone"] = validatePhone($phoneNumber); }
+    if(validatePassword($password)) { $errors["password"] = validatePassword($password); }
+    if(validateConfirmPassword($password, $confirmPassword)) { $errors["confirmPassword"] = validateConfirmPassword($password, $confirmPassword); }
     
     if(empty($errors)) {
         createUser($id, $name, $phoneNumber, $password);
