@@ -80,7 +80,7 @@ function getAlbumCards($userId){
           <div class='card bg-light mb-3 mt-3' id='$albumId'>
             
             <div class="card-body">
-                <h5 class="card-title"><button class='linkButton' type='submit' name='viewButton' value='$albumId'</button>$albumTitle</h5>
+                <h5 class="card-title"><button class='linkButton' type='submit' name='view' value='$albumId'</button>$albumTitle</h5>
                 <p class="card-text">$albumDescription</p>
             </div>
             <div class="card-footer">
@@ -92,7 +92,7 @@ function getAlbumCards($userId){
                     </select>
                 </p>
                 <div class="buttonCardContainer">
-                    <button class="btn btn-danger btn-sm deleteAlbumBtn" OnClick="confirmDelete('$albumTitle')" type="button" name="deleteAlbum$albumId">Delete Album</button>
+                    <button class="btn btn-danger btn-sm deleteAlbumBtn" OnClick="confirmDelete('$albumTitle', $albumId)" type="button" value="$albumId">Delete Album</button>
                 </div>
             </div>
           </div>
@@ -101,7 +101,7 @@ HEREDOC;
         $returnHTML .= $card;
     }
     
-    $returnHTML .= "</div>";
+    $returnHTML .= "<input type='hidden' id='deleteAlbumIdInput' name='delete' value=''</div>";
     return $returnHTML;
 }
     

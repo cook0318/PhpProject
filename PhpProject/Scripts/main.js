@@ -15,6 +15,9 @@ $("#submitCreateAlbumButton").click(function(){
     }
 });
 
-function confirmDelete(albumTitle){
-    if(confirm("Are you sure you wish to delete '" + albumTitle + "'? All of its photos and their comments will be deletely permanently."));
+function confirmDelete(albumTitle, albumId){
+    if(confirm("Are you sure you wish to delete '" + albumTitle + "'? All of its photos and their comments will be deletely permanently.")){
+        $('#deleteAlbumIdInput').val(albumId);
+        $('#myAlbumsForm').submit();
+    }
 }

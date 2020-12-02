@@ -38,7 +38,9 @@ if(isPostRequest()){
         $success = saveAlbum($albumTitle, $description, $userId, Date('Y-m-d'), $selectedAccessibility);
         if($success){
             // show success, reset inputs
-            $successHTML = "<span class='success'>Successfully created new album '$albumTitle'!</span>";
+            $link = TEMPLATES_URL . "/UploadPictures.php";
+            $successHTML = "<span class='success'>Successfully created new album '$albumTitle'! "
+                    . "Click <a href='$link'>here</a> to start adding photos. </span>";
             $albumTitle = "";
             $selectedAccessibility = "";
             $description = "";
