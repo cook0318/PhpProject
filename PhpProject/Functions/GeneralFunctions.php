@@ -96,8 +96,33 @@ HEREDOC;
     $returnHTML .= "</div>";
     return $returnHTML;
 }
-    
 
+function ValidateFileUpload($files, $name){
+    $allowed =  array('gif','png' ,'jpg', 'jpeg');
+    $total = count($_FILES[$name]['name']);
+
+
+    if (in_array(1, $files[$name]['error'], false))
+    {
+        return "Upload file is too large"; 
+    }
+    if (in_array(4, $files[$name]['error'], false))
+    {
+        return "No upload file specified"; 
+    }
+
+
+    //validates extensions and sizes for all files
+    for ($i=0; $i < $total ; $i++) {
+        $filename = $files[$name]['name'][$i];
+        $ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
+        if(!in_array($ext, $allowed)){
+            return 'Accepted picture types: JPG(JPEG), GIF and PNG!';
+        }
+        }
+    }
+
+    
 
 
 
