@@ -53,7 +53,8 @@ function getAlbumCards($userId){
         return "<br><br><p>You do not currently have any albums.</p>";    
     }
     
-    $returnHTML = "<a href='AddAlbum.php'>Create an album</a><button class='updateAccessibilitiesBtn' type='submit' name='updateAccessibilities'>Update Accessibilities</button><div class='card-deck'>";
+    $returnHTML = "<div class='controlHolder'><a href='AddAlbum.php'>Create an album</a><button class='updateAccessibilitiesBtn btn btn-primary' "
+            . "type='submit' name='updateAccessibilities'>Update Accessibilities</button></div><div class='card-deck'>";
     foreach($albums as $album){
         $albumId = $album->getAlbumId();
         $pictures = getAlbumPictures($album->getAlbumId());
@@ -76,23 +77,22 @@ function getAlbumCards($userId){
         //<img class="card-img-top" src="$coverPhotoPath" alt="$coverPhotoTitle">
         $card = <<<HEREDOC
         <div class="col-lg-4 col-sm-6 col-xs-12  d-flex align-items-stretch">
-          <div class='card bg-light mb-3 mt-3'>
+          <div class='card bg-light mb-3 mt-3' id='$albumId'>
             
             <div class="card-body">
-                <h5 class="card-title">$albumTitle</h5>
+                <h5 class="card-title"><button class='linkButton' type='submit' name='viewButton' value='$albumId'</button>$albumTitle</h5>
                 <p class="card-text">$albumDescription</p>
             </div>
             <div class="card-footer">
                 <p class="card-text">$photoCount</p>
                 <p class="card-text"><b>Uploaded:</b> $uploadDate</p>
                 <p class="card-text"><b>Accessible by:</b> 
-                    <select type='text' name='accessibility$albumId' style='font-size: small'>
+                    <select type='text' class='form-control smallSelect' name='accessibility$albumId'>
                         $accessibilityDropdown
                     </select>
                 </p>
                 <div class="buttonCardContainer">
-                    <button class="btn btn-primary btn-sm goToAlbumBtn" type="submit" name="goToAlbum$albumId">View Album</button>
-                    <button class="btn btn-danger btn-sm deleteAlbumBtn" type="submit" name="deleteAlbum$albumId">Delete Album</button>
+                    <button class="btn btn-danger btn-sm deleteAlbumBtn" OnClick="confirmDelete('$albumTitle')" type="button" name="deleteAlbum$albumId">Delete Album</button>
                 </div>
             </div>
           </div>

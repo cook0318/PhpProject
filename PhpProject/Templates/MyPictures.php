@@ -6,7 +6,7 @@ $pageTitle = "My Pictures";
 
 $_SESSION["lastPage"] = "MyPictures";
 
-requireLogin();
+//requireLogin();
 
 ?>
 

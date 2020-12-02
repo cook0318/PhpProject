@@ -17,6 +17,7 @@ $userId = $currentUser->getUserId();
 $albums = getAllUserAlbums($userId);
 $updatedAlbums = "";
 
+// will be true if user has clicked 'Update Accessibilties' button.
 if(isset($_POST['updateAccessibilities'])){
     $updatedAlbums = "<ul>";
     foreach($_POST as $selectName => $selectedValue){
@@ -41,6 +42,14 @@ if(isset($_POST['updateAccessibilities'])){
     else{
         $updatedAlbums = "<p class='error'>You haven't changed any album's accesibility value.</p>";
     }
+} else if(isPostRequest()){
+    // will be true if user clicks album title, which are actually submit buttons.
+    foreach($_POST as $name => $value){
+        if($name == "viewButton"){
+            $_SESSION['selectedAlbumId'] = $value;
+            header('Location: ' . TEMPLATES_URL . "/MyPictures.php");
+        }
+    }
 }
 
 
@@ -51,7 +60,8 @@ include(COMMON_PATH . '\Header.php'); ?>
 <body>
 <div class="container">
     <h1>My Albums</h1>
-    <p>Welcome <?php print($name)?>! (Not you? Change user <a href="NewUser.php">here</a>)</p>
+    <p>Welcome <?php print($name)?>! (Not you? Change user <a href="NewUser.php">here</a>). Click an  Album's title to view its photos.</p>
+    <hr>
     <?php print($updatedAlbums) ?>
     <form class='relative' name='updateAlbums' method='POST' action="">
         <?php print(getAlbumCards($userId)) ?>
