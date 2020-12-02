@@ -15,6 +15,13 @@ $("#submitCreateAlbumButton").click(function(){
     }
 });
 
+function confirmDelete(albumTitle, albumId){
+    if(confirm("Are you sure you wish to delete '" + albumTitle + "'? All of its photos and their comments will be deletely permanently.")){
+        $('#deleteAlbumIdInput').val(albumId);
+        $('#myAlbumsForm').submit();
+    }
+}
+
 // Changes the album visualized according to dropDownList change on FriendPictures.php and MyPictures.php
 $('#friendAlbum').change(function() {
     var id = this.options[this.selectedIndex].value;

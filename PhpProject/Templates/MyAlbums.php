@@ -17,6 +17,7 @@ $userId = $currentUser->getUserId();
 $albums = getAllUserAlbums($userId);
 $updatedAlbums = "";
 
+// will be true if user has clicked 'Update Accessibilties' button.
 if(isset($_POST['updateAccessibilities'])){
     $updatedAlbums = "<ul>";
     foreach($_POST as $selectName => $selectedValue){
@@ -41,7 +42,25 @@ if(isset($_POST['updateAccessibilities'])){
     else{
         $updatedAlbums = "<p class='error'>You haven't changed any album's accesibility value.</p>";
     }
+} 
+else if(isPostRequest()){
+    // will be true if user clicks album title, which are actually submit buttons,
+    // or if user clicks to delete an album.
+    foreach($_POST as $name => $albumId){
+        if($name == "view"){
+            $_SESSION['selectedAlbumId'] = $albumId;
+            header('Location: ' . TEMPLATES_URL . "/MyPictures.php");
+        }
+        if($name == "delete"){
+            $albumToDelete = getAlbumFromId($albumId);
+            $albumTitle = $albumToDelete->getTitle();
+            $success = deleteAlbum($albumId);
+            $updatedAlbums = $success ? "<p class='success'>Successfully deleted '" . $albumTitle . "'. </p>" :
+                "<p class='error'> An error occured and '" . $albumTitle . "' was not deleted.</p>" ;
+        }
+    }
 }
+
 
 
 
@@ -51,9 +70,10 @@ include(COMMON_PATH . '\Header.php'); ?>
 <body>
 <div class="container">
     <h1>My Albums</h1>
-    <p>Welcome <?php print($name)?>! (Not you? Change user <a href="NewUser.php">here</a>)</p>
+    <p>Welcome <?php print($name)?>! (Not you? Change user <a href="NewUser.php">here</a>). Click an  Album's title to view its photos.</p>
+    <hr>
     <?php print($updatedAlbums) ?>
-    <form class='relative' name='updateAlbums' method='POST' action="">
+    <form id='myAlbumsForm' class='relative' name='updateAlbums' method='POST' action="">
         <?php print(getAlbumCards($userId)) ?>
     </form>
 </div>

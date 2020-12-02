@@ -11,7 +11,7 @@ if($_SESSION["lastPage"] != "MyPictures") {
 
 $_SESSION["lastPage"] = "MyPictures";
 
-requireLogin();
+//requireLogin();
 
 $user = getUserFromID($_SESSION['userLogged']);
 

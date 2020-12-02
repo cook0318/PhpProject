@@ -196,16 +196,38 @@ function getAlbumPictures($albumId){
     return $pictures;
 }
 
-// Gets a list of picture objects given an album Id.
-function getPictureById($pictureId){
+
+function getAlbumFromId($albumId){
+    $album = "";
     $PDO = Connect();
-    $sql = "SELECT * FROM Picture WHERE picture_id = :pictureId";
+    $sql = "SELECT album_id, title, description, date_updated, accessibility_code, "
+                . "owner_id FROM Album  WHERE album_id = :albumId";
     $preparedStatement = $PDO->prepare($sql);
-    if($preparedStatement->execute(['pictureId' => $pictureId])){
+    if($preparedStatement->execute(['albumId' => $albumId])){
         $row = $preparedStatement->fetch(PDO::FETCH_ASSOC);
-        $picture = new Picture($row['picture_id'], $row['album_id'], $row['file_name'], $row['title'], $row['description'], $row['date_added']);
-    }    
-    return $picture;
+        $album = new Album($row['album_id'], $row['title'], $row['description'], 
+                $row['date_updated'], $row['owner_id'], $row['accessibility_code']);
+    }
+    
+    return $album;
+}
+
+// Deletes all photos in an album, then deletes the album itself.
+// Returns true if successful, otherwise returns false.
+function deleteAlbum($albumId){
+    $pictures = getAlbumPictures($albumId);
+    foreach($pictures as $picture){
+        $success = deletePicture($picture->getPictureId());
+        if($success == false){
+            return false;
+        }
+    }
+    $PDO = Connect();
+    $sql =  "DELETE FROM album WHERE album_id = :albumId";
+    $preparedStatement = $PDO->prepare($sql);
+    $success = $preparedStatement->execute(['albumId' => $albumId]);
+    
+    return $success;
 }
 
 // Creates a friend request. Returns true if request was successful or false otherwise.
@@ -244,7 +266,7 @@ function deleteFriend($userId, $friendId){
 // Denies a friend request. Returns true if deny was success or false otherwise.
 function denyFriendRequest($userId, $requesterId){
     $PDO = Connect();
-    $sql =  "DELETE FROME Friendship WHERE friend_requester_id = :requesterId AND friend_requestee_id = :userId AND Status='request'";
+    $sql =  "DELETE FROM Friendship WHERE friend_requester_id = :requesterId AND friend_requestee_id = :userId AND Status='request'";
     $preparedStatement = $PDO->prepare($sql);
     $success = $preparedStatement->execute(['userId' => $userId, 'requesterId' => $requesterId]);
     
@@ -299,6 +321,16 @@ function getAllFriendRequests($userId){
     return $friendRequests;
 }
 
+// Gets a list of picture objects given an album Id.
+function getPictureById($pictureId){
+    $PDO = Connect();
+    $sql = "SELECT * FROM Picture WHERE picture_id = :pictureId";
+    $preparedStatement = $PDO->prepare($sql);
+    if($preparedStatement->execute(['pictureId' => $pictureId])){
+        $row = $preparedStatement->fetch(PDO::FETCH_ASSOC);
+        $picture = new Picture($row['picture_id'], $row['album_id'], $row['file_name'], $row['title'], $row['description'], $row['date_added']);
+    }    
+    return $picture;
 ?>
 
 

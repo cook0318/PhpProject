@@ -96,11 +96,41 @@ a.nav-link{
     margin-left: 10px;
 }
 
+.linkButton{
+    background-color: transparent;
+    border: none;
+    color: blue;
+    padding: 0;
+    text-align: left;
+}
+.linkButton:hover{
+    text-decoration: underline;
+}
+
+.createAlbumInputs td{
+    padding-bottom: 1rem;
+    padding-left: 1rem;
+}
+
+.setWidth10{
+    width : 100%;
+}
+
+.smallSelect{
+    display: inline;
+    font-size: small;
+    max-width: 60%;
+}
+
+.controlHolder{
+    padding: 0.6rem 0;
+    display: flex;
+    align-items: center;
+}
+
 .hidden {
     display: none;
 }
-
-/* TEST FOR IMAGES --- START */
 
 .img-thumbnail {
     width: 100px;
@@ -142,4 +172,3 @@ a.nav-link{
     margin: 0;
     padding: 50px 0;
 }
-/* TEST FOR IMAGES --- END */

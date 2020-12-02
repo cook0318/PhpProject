@@ -38,7 +38,9 @@ if(isPostRequest()){
         $success = saveAlbum($albumTitle, $description, $userId, Date('Y-m-d'), $selectedAccessibility);
         if($success){
             // show success, reset inputs
-            $successHTML = "<span class='success'>Successfully created new album '$albumTitle'!</span>";
+            $link = TEMPLATES_URL . "/UploadPictures.php";
+            $successHTML = "<span class='success'>Successfully created new album '$albumTitle'! "
+                    . "Click <a href='$link'>here</a> to start adding photos. </span>";
             $albumTitle = "";
             $selectedAccessibility = "";
             $description = "";
@@ -67,23 +69,24 @@ include(COMMON_PATH . '\Header.php'); ?>
 <div class="container">
     <h1>Create New Album</h1>
     <p>Welcome <?php print($name)?>! (Not you? Change user <a href="NewUser.php">here</a>)</p>
+    <hr>
     <form name='newAlbum' method='POST' action="">
-    <table>
+    <table class='createAlbumInputs'>
         <tr>
             <td><label for='title'>Title:</label></td>
-            <td><input id='albumTitle' type='text' name='title' value='<?php print($albumTitle)?>'><span class='error'><?php print($albumTitleError)?></span></td>
+            <td><input class='setWidth10 form-control' id='albumTitle' type='text' name='title' value='<?php print($albumTitle)?>'><span class='error'><?php print($albumTitleError)?></span></td>
         </tr>
         <tr>
             <td><label for='accessibility'>Accessible by:</label></td>
             <td>
-                <select type='text' name='accessibility'>
+                <select class='setWidth10 form-control' type='text' name='accessibility'>
                     <?php print(getAccessibilityDropdown($selectedAccessibility)) ?>
                 </select>
             </td>
         </tr>
         <tr>
             <td><label for='description'>Description:</label></td>
-            <td><textarea id='albumDescription' rows='3' cols='30' name='description'><?php print($description)?></textarea><span class='error'><?php print($albumDescriptionError)?></span></td>
+            <td><textarea class='setWidth10 form-control' id='albumDescription' rows='3' cols='30' name='description'><?php print($description)?></textarea><span class='error'><?php print($albumDescriptionError)?></span></td>
         </tr>
     </table>
         <button class='btn btn-primary' id='submitCreateAlbumButton' type='button' name='submitCreateAlbumButton'>Submit</button>
