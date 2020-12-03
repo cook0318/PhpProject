@@ -6,11 +6,9 @@ $pageTitle = "My Albums";
 $_SESSION["lastPage"] = "MyAlbums";
 
 // redirect if necessary
-//requireLogin(); // you can comment this out to test your page without making login
+requireLogin();
 
-//$currentUser = getUserFromID($_SESSION['userLogged']); // for testing, use next line
-$_SESSION['userLogged'] = 'user1'; // delete later
-$currentUser = getUserFromID('user1'); // comment out/delete when not testing.
+$currentUser = getUserFromID($_SESSION['userLogged']);
 
 // general page variables
 $name = $currentUser->getName();
@@ -71,8 +69,9 @@ include(COMMON_PATH . '\Header.php'); ?>
 <body>
 <div class="container">
     <h1>My Albums</h1>
-    <p>Welcome <?php print($name)?>! (Not you? Change user <a href="Login.php">here</a>). Click an  Album's title to view its photos.</p>
-    <hr>
+    <p>Welcome <?php print($name)?>! (Not you? Change user <a href="Login.php">here</a>).</p>
+    <hr> 
+    <p class="text-muted">Click an  Album's title to view its photos.</p>
     <?php print($updatedAlbums) ?>
     <form id='myAlbumsForm' class='relative' name='updateAlbums' method='POST' action="">
         <?php print(getAlbumCards($userId)) ?>

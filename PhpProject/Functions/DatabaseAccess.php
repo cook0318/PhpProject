@@ -122,7 +122,9 @@ function getUserFromID($id){
     $preparedStatement = $PDO->prepare($sql);
     if($preparedStatement->execute(['userId' => idEscape($id)])){
         $row = $preparedStatement->fetch(PDO::FETCH_ASSOC);
-        $user = new User($row['user_id'], $row['name'], $row['phone']);
+        if($row != 0){
+            $user = new User($row['user_id'], $row['name'], $row['phone']);
+        }
     }
     
     return $user;
@@ -294,7 +296,7 @@ function getAllFriends($userId){
     $preparedStatement1 = $PDO->prepare($sql1);
     $preparedStatement1->execute(['userId' => $userId]);
     foreach($preparedStatement1 as $row){
-        $friendId = $row['Friend_Requestee_Id'];
+        $friendId = $row['friend_requester_id'];
         $user = getUserFromID($friendId);
         if(is_null($user) == false){
             $friends[] = $user;
@@ -313,7 +315,7 @@ function getAllFriendRequests($userId){
     $preparedStatement = $PDO->prepare($sql);
     $preparedStatement->execute(['userId' => $userId]);
     foreach($preparedStatement as $row){
-        $friendId = $row['Friend_RequesterId'];
+        $friendId = $row['friend_requester_id'];
         $friendRequester = getUserFromID($friendId);
         $friendRequests[] = $friendRequester;
     }
@@ -333,16 +335,20 @@ function getPictureById($pictureId){
     return $picture;
 }
 
-// Gets friendship status
+// Gets friendship 
 function getFriendshipStatus($userLoggedID, $friendID){
+    $friendship = null;
     $PDO = Connect();
-    $sql = "SELECT * FROM `friendship` WHERE `friend_requester_id` = :userID and `friend_requestee_id` = :friendID";
+    $sql = "SELECT * FROM `friendship` WHERE (`friend_requester_id` = :userID and `friend_requestee_id` = :friendID) "
+            . "OR (`friend_requestee_id` = :userID and `friend_requester_id` = :friendID)";
     $preparedStatement = $PDO->prepare($sql);
     if($preparedStatement->execute(['userID' => idEscape($userLoggedID), 'friendID' => idEscape($friendID)])){
         $row = $preparedStatement->fetch(PDO::FETCH_ASSOC);
-        $result = $row['status'];
+        if($row != 0){
+            $friendship = new Friendship($row['friend_requester_id'], $row['friend_requestee_id'], $row['status']);
+        }
     }
     
-    return $result;
+    return $friendship;
 }
 ?>

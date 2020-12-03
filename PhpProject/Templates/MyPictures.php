@@ -13,7 +13,7 @@ if($_SESSION["lastPage"] != "MyPictures") {
 
 $_SESSION["lastPage"] = "MyPictures";
 
-//requireLogin();
+requireLogin();
 
 $user = getUserFromID($_SESSION['userLogged']);
 
@@ -154,6 +154,7 @@ if(isPostRequest() && $_POST["newCommentAdded"] == 1) {
         <p class="text-center m-0-p-10 m-b-10">There are no albums to be shown.</p>
     <?php }?>
 
+</div>
 </div>
 </body>
 

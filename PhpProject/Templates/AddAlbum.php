@@ -5,12 +5,10 @@ require_once('../Functions/GeneralFunctions.php');
 $pageTitle = "Add Album";
 $_SESSION["lastPage"] = "AddAlbum";
 
-// redirect if necessary
-//requireLogin(); // you can comment this out to test your page without making login
+//requireLogin();
 
 // general page variables
-//$currentUser = getUserFromID($_SESSION['userLogged']); // for testing, use next line
-$currentUser = getUserFromID('user1'); // comment out/delete when not testing.
+$currentUser = getUserFromID($_SESSION['userLogged']);
 $name = $currentUser->getName();
 $userId = $currentUser->getUserId();
 

@@ -133,14 +133,14 @@ a.nav-link{
 }
 
 .img-thumbnail {
-    /* width: 100px; */
-    /* height: 100px; */
+    width: 100px;
+    height: 100px;
     cursor: pointer;
 }
 
 .img-current {
-    /* width: 1024px; */
-    /* height: 800px; */
+    width: 100%; 
+    height: auto; 
 }
 
 #thumbnail-bar {

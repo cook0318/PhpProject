@@ -15,12 +15,16 @@ requireLogin();
 
 $user = getUserFromID($_SESSION['userLogged']);
 
-// for testing - start
-$friend = getUserFromID('U0002');
-//$friend = getUserFromID(idEscape($_GET['id']));
-// for testing - end
+if(isset($_GET['id']) == false){
+    header('Location: ' . TEMPLATES_URL . "/MyFriends.php");
+}
 
-if(getFriendshipStatus($user->getUserId(), $friend->getUserId()) != "accepted") {
+$friend = getUserFromID(idEscape($_GET['id']));
+if($friend == null){
+    header('Location: ' . TEMPLATES_URL . "/MyFriends.php");
+}
+
+if(getFriendshipStatus($user->getUserId(), $friend->getUserId())->getStatus() != "accepted") {
     header('Location: ' . TEMPLATES_URL . "/MyFriends.php");
 }
 
@@ -166,6 +170,7 @@ if(isPostRequest() && $_POST["newCommentAdded"] == 1) {
         <p class="text-center m-0-p-10 m-b-10">There are no albums to be shown.</p>
     <?php }?>
 
+</div>
 </div>
 </body>
 
