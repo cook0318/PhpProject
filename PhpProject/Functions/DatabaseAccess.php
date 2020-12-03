@@ -332,4 +332,7 @@ function getPictureById($pictureId){
     }    
     return $picture;
 }
+
+
+
 ?>

@@ -30,15 +30,22 @@ requireLogin();
 	    //validators
 	    if(isset($_POST['sendFriendRequest']))
 	    {
-	        //Connection to DBO            
-	        $dbConnection = parse_ini_file("../DatabaseInfo/db.ini");        	
-	        extract($dbConnection);
-	        $myPdo = new PDO($dsn, $user, $password); 
-	        //checking if ID exists in application         
-	        $sqlStatement = 'SELECT * FROM User WHERE UserId = :PlaceHolderUserID ';
-	        $pStmt = $myPdo->prepare($sqlStatement);       
-	        $pStmt ->execute([':PlaceHolderUserID' => $friendIdTxt]);      
-	        $chkAccount = $pStmt->fetch();        
+                $user = getUserFromID($friendIdTxt);
+                if($user == null){
+                    $validateError = "User is not in this social media yet!";
+                }
+                else{
+                    
+                }
+//	        //Connection to DBO            
+//	        $dbConnection = parse_ini_file("../DatabaseInfo/db.ini");        	
+//	        extract($dbConnection);
+//	        $myPdo = new PDO($dsn, $user, $password); 
+//	        //checking if ID exists in application         
+//	        $sqlStatement = 'SELECT * FROM User WHERE UserId = :PlaceHolderUserID ';
+//	        $pStmt = $myPdo->prepare($sqlStatement);       
+//	        $pStmt ->execute([':PlaceHolderUserID' => $friendIdTxt]);      
+//	        $chkAccount = $pStmt->fetch();        
 	        
 	        //user cannot send a request to someone who is already a friend
 	        //a) if user is a requester and invite was accepeted:
