@@ -31,18 +31,20 @@ if($hasAlbums){
     }
     // Gets all pictures from album selected
     $albumPictures = getAlbumPictures($_SESSION['albumSelected']);
+    $hasPictures = count($albumPictures) > 0 ? true : false;
     
-    
-    // Saves picture selected in SESSION / creates default value if fresh session
-    if(!empty($_POST['pictureId'])){
-        $_SESSION['pictureSelectedId'] = $_POST['pictureId'];
+    if($hasPictures){
+        // Saves picture selected in SESSION / creates default value if fresh session
+        if(!empty($_POST['pictureId'])){
+            $_SESSION['pictureSelectedId'] = $_POST['pictureId'];
+        }
+        if(!isset($_SESSION['pictureSelectedId'])){
+            $_SESSION['pictureSelectedId'] = $_POST['pictureId'] ?? $albumPictures[0]->getPictureId();
+        }
+        // Gets picture selected and its comments
+        $pictureSelected = getPictureById($_SESSION['pictureSelectedId']); // Class picture selected
+        $pictureComments = getComments($_SESSION['pictureSelectedId']); // Comments picture selected
     }
-    if(!isset($_SESSION['pictureSelectedId'])){
-        $_SESSION['pictureSelectedId'] = $_POST['pictureId'] ?? $albumPictures[0]->getPictureId();
-    }
-    // Gets picture selected and its comments
-    $pictureSelected = getPictureById($_SESSION['pictureSelectedId']); // Class picture selected
-    $pictureComments = getComments($_SESSION['pictureSelectedId']); // Comments picture selected
 }
 
 $comment = $_POST["newComment"] ?? '';
@@ -85,6 +87,7 @@ if(isPostRequest() && $_POST["newCommentAdded"] == 1) {
                 </form>
             </div>
 
+            <?php if($hasPictures) { ?> <!-- Page will be displayed case there are pictures to be shown -->
             <div class="m-0-p-10"> <!-- Title of picture selected -->
                 <h2 class="text-center"><?php echo $pictureSelected->getTitle(); ?></h2>
             </div>
@@ -111,8 +114,10 @@ if(isPostRequest() && $_POST["newCommentAdded"] == 1) {
                     </form>
                 </div>
             </div>
+            <?php }?>
         </div>
         
+        <?php if($hasPictures) { ?> <!-- Page will be displayed case there are pictures to be shown -->
         <div class="col-3">
             <div class="col m-0-p-50"></div>
             <div id="description-comments"> <!-- Box with selected picture Description and Comments -->
@@ -137,9 +142,15 @@ if(isPostRequest() && $_POST["newCommentAdded"] == 1) {
                 <input type="submit" id="addComment" class="btn btn-primary" value="Add Comment">
             </form>
         </div>
+        <?php } else { ?>
+
+        <div class="col-9">
+            <p class="text-center m-0-p-10 m-b-10">There are no pictures to be shown.</p>           
+        </div>
+
     </div>
 
-    <?php } else { ?> <!-- Page will be displayed case there are NO albums to be shown -->
+    <?php }} else { ?> <!-- Page will be displayed case there are NO albums to be shown -->
         <p class="text-center m-0-p-10 m-b-10">There are no albums to be shown.</p>
     <?php }?>
 
