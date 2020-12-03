@@ -10,19 +10,18 @@ requireLogin();
 
 ?>
 
-<?php include(COMMON_PATH . '\Header.php'); ?>
+<?php include(COMMON_PATH . '\Header.php'); 
 
-<?php
-	    session_start();
+	    //session_start();
 	    $validatorError = "";
 	    
 	    //only authenticated users access this page. Other than that, back to loging +
 	    //creating a session to make user come back here after authentitcated
-	     if ($_SESSION['userIdTxt'] == null)
-	    { 
-	        $_SESSION['activePage'] = "MyFriends.php";        
-	        exit(header('Location: Login.php'));
-	    }
+//	     if ($_SESSION['userLogged'] == null)
+//	    { 
+//	        $_SESSION['activePage'] = "MyFriends.php";        
+//	        exit(header('Location: Login.php'));
+//	    }
 	    
 	    //Connection to DBO            
 	    $dbConnection = parse_ini_file("../DatabaseInfo/db.ini");        	

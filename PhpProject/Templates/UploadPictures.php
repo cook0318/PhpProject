@@ -10,23 +10,21 @@ requireLogin();
 
 ?>
 
-<?php include(COMMON_PATH . '\Header.php'); ?>
-
-
-<?php
-	    session_start();
+<?php include(COMMON_PATH . '\Header.php'); 
+	    
+session_start();
 	    include COMMON_PATH . '\ImageHandler.php';
 	    //include_once COMMON_PATH . '\Settings.php';
 	
 
 	    //only authenticated users can access this page. Others are redirected to the login page
 	    //updates the session so the user can come back to this page after authentication
-	    if ($_SESSION['userIdTxt'] == null)
-	    { 
-	        $_SESSION['activePage'] = "UploadPictures.php";        
-	        exit(header('Location: Login.php'));
-	    }
-	    $userIdTxt = $_SESSION['userIdTxt'];
+//	    if ($_SESSION['userLogged'] == null)
+//	    { 
+//	        $_SESSION['activePage'] = "UploadPictures.php";        
+//	        exit(header('Location: Login.php'));
+//	    }
+	    $userIdTxt = $_SESSION['userLogged'];
 	
 
 	    $dbConnection = parse_ini_file("../DatabaseInfo/db.ini");        	

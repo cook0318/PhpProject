@@ -1,9 +1,14 @@
 <?php
-    require_once('../Functions/GeneralFunctions.php');
-    $pageTitle = "Add Friend";
-    //$_SESSION["lastPage"] = "[MyFriends]";
-    //requireLogin();
-	    session_start();
+    
+require_once('../Functions/GeneralFunctions.php');
+    
+$pageTitle = "Add Friend";
+    
+$_SESSION["lastPage"] = "AddFriend";
+    
+requireLogin();
+
+	    //session_start();
 	    
 	    $friendIdTxt = htmlspecialchars($_POST["friendIdTxt"]);
 	    $validateError = ""; 
@@ -11,12 +16,12 @@
 	    
 	    //only authenticated users access this page. Other than that, back to loging +
 	    //creating a session to make user come back here after authentitcated
-	     if ($_SESSION['userIdTxt'] == null)
-	    { 
-	        $_SESSION['activePage'] = "AddFriend.php";        
-	        header('Location: Login.php');
-	        exit;
-	    }
+//	     if ($_SESSION['userIdTxt'] == null)
+//	    { 
+//	        $_SESSION['activePage'] = "AddFriend.php";        
+//	        header('Location: Login.php');
+//	        exit;
+//	    }
 	    
 	    //validators
 	    if(isset($_POST['sendFriendRequest']))
