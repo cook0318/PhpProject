@@ -8,9 +8,13 @@ $_SESSION["lastPage"] = "MyFriends";
 
 requireLogin();
 
-?>
+$currentUser = getUserFromID($_SESSION['userLogged']);
+$userId = $currentUser->getUserId();
+$name = $currentUser->getName();
 
-<?php include(COMMON_PATH . '\Header.php'); 
+
+
+include(COMMON_PATH . '\Header.php'); 
 
 	    //session_start();
 	    $validatorError = "";
@@ -33,16 +37,16 @@ requireLogin();
 	    $sql = "SELECT friendship.Friend_RequesterId, friendship.Friend_RequesteeId FROM friendship "
 	            . "WHERE (Friend_RequesterId = :userId OR Friend_RequesteeId = :userId) AND Status = 'accepted' ";
 	    $pStmt = $myPdo->prepare($sql);
-	    $pStmt->execute ( [':userId' => $_SESSION['userIdTxt'] ]);
+	    $pStmt->execute ( [':userId' => $userId ]);
 	    $friendsByUser = $pStmt->fetchAll();
 	    
 	    //sending userId's to $friendIdArray
 	    $friendIdArray = array();
 	    foreach ($friendsByUser as $row){
-	        if ($row[0] != $_SESSION['userIdTxt'] && (!in_array($row[0], $friendIdArray))){
+	        if ($row[0] != $_SESSION['userLogged'] && (!in_array($row[0], $friendIdArray))){
 	            array_push($friendIdArray, $row[0]);
 	        }
-	        if ($row[1] != $_SESSION['userIdTxt'] && (!in_array($row[1], $friendIdArray))){
+	        if ($row[1] != $_SESSION['userLogged'] && (!in_array($row[1], $friendIdArray))){
 	            array_push($friendIdArray, $row[1]);
 	        }
 	    }
@@ -57,7 +61,7 @@ requireLogin();
 	                        . "WHERE (friendship.Friend_RequesterId = :userId AND friendship.Friend_RequesteeId = :friendId) "
 	                        . "OR (friendship.Friend_RequesterId = :friendId AND friendship.Friend_RequesteeId = :userId)"; 
 	                $pStmt = $myPdo->prepare($sql);
-	                $pStmt->execute(array(':userId' => $_SESSION['userIdTxt'], ':friendId' => $row)); 
+	                $pStmt->execute(array(':userId' => $_SESSION['userLogged'], ':friendId' => $row)); 
 	                $pStmt->commit;                 
 	            }
 	            header('Location: MyFriends.php'); //redirect to update table view
@@ -77,14 +81,14 @@ requireLogin();
 	            $sqlStatement = "UPDATE friendship SET status = 'accepted' "
 	                . "WHERE Friend_RequesterId = :requesteeId AND Friend_RequesteeId = :requesterId "; 
 	            $pStmt = $myPdo->prepare($sqlStatement);        
-	            $pStmt ->execute(array(':requesterId' => $_SESSION['userIdTxt'] , ':requesteeId' => $row ));      
+	            $pStmt ->execute(array(':requesterId' => $_SESSION['userLogged'] , ':requesteeId' => $row ));      
 	            $pStmt->commit;
 	            
 	            //insert accepted status for main user         
 	            $sqlStatement = "INSERT INTO friendship (Friend_RequesterId, Friend_RequesteeId, Status) "
 	                    . "VALUES (:requesterId, :requesteeId, :status)";
 	            $pStmt = $myPdo->prepare($sqlStatement);        
-	            $pStmt ->execute(array(':requesterId' => $_SESSION['userIdTxt'] , ':requesteeId' => $row, ':status' => 'accepted' ));      
+	            $pStmt ->execute(array(':requesterId' => $_SESSION['userLogged'] , ':requesteeId' => $row, ':status' => 'accepted' ));      
 	            $pStmt->commit;                                
 	            }
 	            header('Location: MyFriends.php'); //redirect to update table view
@@ -105,7 +109,7 @@ requireLogin();
 	                        . "WHERE friendship.Friend_RequesterId = :requesterId "
 	                        . "AND friendship.Friend_RequesteeId = :requesteeId ";
 	                $pStmt = $myPdo->prepare($sqlStatement);        
-	                $pStmt ->execute(array(':requesteeId' => $_SESSION['userIdTxt'] , ':requesterId' => $row ));      
+	                $pStmt ->execute(array(':requesteeId' => $_SESSION['userLogged'] , ':requesterId' => $row ));      
 	                $pStmt->commit;  
 	            }
 	            header('Location: MyFriends.php'); //redirect to update table view
@@ -116,14 +120,13 @@ requireLogin();
 	            $validatorError = "You must select at least one checkbox!"; //at least one checkbox must be selected
 	        }   
 	    }
-	     
-	    include 'ProjectCommon/Header.php';
+
 	?>
 	    <div class="container-fluid">
 	        <br>
 	        <h1>My Friends</h1>
 	        <br>
-	        <h4>Welcome <b><?php print $_SESSION['nameTxt'];?></b>! (Not you? Change your session <a href="Login.php">here</a>)</h4>
+	        <h4>Welcome <b><?php print $name;?></b>! (Not you? Change user <a href="Login.php">here</a>)</h4>
 	        <br><br>
 	        <form method='post' action=MyFriends.php> 
 	            <!--First table: FRIENDS-->
@@ -204,7 +207,7 @@ requireLogin();
 	                    . "INNER JOIN friendship ON friendship.Friend_RequesterId = user.UserId "
 	                    . "WHERE friendship.Status = 'request' AND friendship.Friend_RequesteeId = :userId ";        
 	            $pStmt = $myPdo->prepare($sql);
-	            $pStmt->execute ( [':userId' => $_SESSION['userIdTxt'] ]);
+	            $pStmt->execute ( [':userId' => $_SESSION['userLogged'] ]);
 	            $requestFriend = $pStmt->fetchAll();
 	            foreach ($requestFriend as $friendName)
 	            {

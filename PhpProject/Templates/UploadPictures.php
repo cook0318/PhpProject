@@ -12,7 +12,7 @@ requireLogin();
 
 <?php include(COMMON_PATH . '\Header.php'); 
 	    
-session_start();
+//session_start();
 	    include COMMON_PATH . '\ImageHandler.php';
 	    //include_once COMMON_PATH . '\Settings.php';
 	
@@ -34,12 +34,10 @@ session_start();
 	    $myPdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 	
 
-	
-
 	    //Retrieves available album options from database
 	    $sql = "SELECT album_id, title FROM album WHERE album.Owner_Id = :userID ";
 	    $pStmt = $myPdo->prepare($sql);
-	    $pStmt->execute(array(userID => $userIdTxt));
+	    $pStmt->execute(['userID' => $userIdTxt]);
 	    $albums = $pStmt->fetchAll();
 	
 

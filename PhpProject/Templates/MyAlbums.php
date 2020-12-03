@@ -9,6 +9,7 @@ $_SESSION["lastPage"] = "MyAlbums";
 //requireLogin(); // you can comment this out to test your page without making login
 
 //$currentUser = getUserFromID($_SESSION['userLogged']); // for testing, use next line
+$_SESSION['userLogged'] = 'user1'; // delete later
 $currentUser = getUserFromID('user1'); // comment out/delete when not testing.
 
 // general page variables
@@ -48,7 +49,7 @@ else if(isPostRequest()){
     // or if user clicks to delete an album.
     foreach($_POST as $name => $albumId){
         if($name == "view"){
-            $_SESSION['selectedAlbumId'] = $albumId;
+            $_SESSION['albumSelected'] = $albumId;
             header('Location: ' . TEMPLATES_URL . "/MyPictures.php");
         }
         if($name == "delete"){
@@ -70,7 +71,7 @@ include(COMMON_PATH . '\Header.php'); ?>
 <body>
 <div class="container">
     <h1>My Albums</h1>
-    <p>Welcome <?php print($name)?>! (Not you? Change user <a href="NewUser.php">here</a>). Click an  Album's title to view its photos.</p>
+    <p>Welcome <?php print($name)?>! (Not you? Change user <a href="Login.php">here</a>). Click an  Album's title to view its photos.</p>
     <hr>
     <?php print($updatedAlbums) ?>
     <form id='myAlbumsForm' class='relative' name='updateAlbums' method='POST' action="">

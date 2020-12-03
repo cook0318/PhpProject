@@ -5,13 +5,15 @@ require_once('../Functions/GeneralFunctions.php');
 $pageTitle = "My Pictures";
 
 if($_SESSION["lastPage"] != "MyPictures") {
-    unset($_SESSION['albumSelected']);
+    if($_SESSION["lastPage"] != "MyAlbums"){
+        unset($_SESSION['albumSelected']);
+    }    
     unset($_SESSION['pictureSelectedId']);
 }
 
 $_SESSION["lastPage"] = "MyPictures";
 
-requireLogin();
+//requireLogin();
 
 $user = getUserFromID($_SESSION['userLogged']);
 

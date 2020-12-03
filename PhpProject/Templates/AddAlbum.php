@@ -68,7 +68,7 @@ include(COMMON_PATH . '\Header.php'); ?>
 <body>
 <div class="container">
     <h1>Create New Album</h1>
-    <p>Welcome <?php print($name)?>! (Not you? Change user <a href="NewUser.php">here</a>)</p>
+    <p>Welcome <?php print($name)?>! (Not you? Change user <a href="Login.php">here</a>)</p>
     <hr>
     <form name='newAlbum' method='POST' action="">
     <table class='createAlbumInputs'>

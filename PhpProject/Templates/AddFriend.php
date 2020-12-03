@@ -5,6 +5,10 @@ require_once('../Functions/GeneralFunctions.php');
 $pageTitle = "Add Friend";
     
 $_SESSION["lastPage"] = "AddFriend";
+
+$currentUser = getUserFromID($_SESSION['userLogged']);
+$userId = $currentUser->getUserId();
+$name = $currentUser->getName();
     
 requireLogin();
 
@@ -124,7 +128,7 @@ requireLogin();
 	?>
 	 
 	    <br><h1>&nbsp &nbsp Add Friend</h1>  
-	    <br><h4>&nbsp &nbsp Welcome <b><?php print $_SESSION['nameTxt'];?></b>! (Not you? Change your session <a href="Login.php">here</a>)</h4>
+	    <br><h4>&nbsp &nbsp Welcome <b><?php print $name;?></b>! (Not you? Change your user <a href="Login.php">here</a>)</h4>
 	    <h4>&nbsp &nbsp Enter the ID of the user you want to be friends with:</h4>
 	
 
