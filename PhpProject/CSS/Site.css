@@ -127,3 +127,48 @@ a.nav-link{
     display: flex;
     align-items: center;
 }
+
+.hidden {
+    display: none;
+}
+
+.img-thumbnail {
+    width: 100px;
+    height: 90px;
+    cursor: pointer;
+}
+
+.img-current {
+    width: 100%;
+    height: auto;
+}
+
+#thumbnail-bar {
+    /* width: 100%; */
+    overflow: auto;
+    white-space: nowrap;
+}
+
+#description-comments {
+    overflow: auto;
+    white-space: normal;
+    max-height: 30rem;
+}
+
+.thumbnail-item {
+    display: inline;
+}
+
+.m-0-p-10 {
+    margin: 0;
+    padding: 10px 0;
+}
+
+.m-b-10 {
+    margin-bottom: 10px;
+}
+
+.m-0-p-50 {
+    margin: 0;
+    padding: 50px 0;
+}
