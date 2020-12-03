@@ -28,41 +28,46 @@ include(COMMON_PATH . '\Header.php');
 //	    }
 	    
 	    //Connection to DBO            
-	    $dbConnection = parse_ini_file("../DatabaseInfo/db.ini");        	
-	    extract($dbConnection);
-	    $myPdo = new PDO($dsn, $user, $password);  
+//	    $dbConnection = parse_ini_file("../DatabaseInfo/db.ini");        	
+//	    extract($dbConnection);
+//	    $myPdo = new PDO($dsn, $user, $password);  
 	    
 	    //Checking friends per user
 	    //getting a list of userId's where friendshipstatus = accepted
-	    $sql = "SELECT friendship.Friend_RequesterId, friendship.Friend_RequesteeId FROM friendship "
-	            . "WHERE (Friend_RequesterId = :userId OR Friend_RequesteeId = :userId) AND Status = 'accepted' ";
-	    $pStmt = $myPdo->prepare($sql);
-	    $pStmt->execute ( [':userId' => $userId ]);
-	    $friendsByUser = $pStmt->fetchAll();
+            $friends = getAllFriends($userId);
+            
+//	    $sql = "SELECT friendship.Friend_RequesterId, friendship.Friend_RequesteeId FROM friendship "
+//	            . "WHERE (Friend_RequesterId = :userId OR Friend_RequesteeId = :userId) AND Status = 'accepted' ";
+//	    $pStmt = $myPdo->prepare($sql);
+//	    $pStmt->execute ( [':userId' => $userId ]);
+//	    $friendsByUser = $pStmt->fetchAll();
 	    
 	    //sending userId's to $friendIdArray
-	    $friendIdArray = array();
-	    foreach ($friendsByUser as $row){
-	        if ($row[0] != $_SESSION['userLogged'] && (!in_array($row[0], $friendIdArray))){
-	            array_push($friendIdArray, $row[0]);
-	        }
-	        if ($row[1] != $_SESSION['userLogged'] && (!in_array($row[1], $friendIdArray))){
-	            array_push($friendIdArray, $row[1]);
-	        }
-	    }
+            
+            
+//	    $friendIdArray = array();
+//	    foreach ($friendsByUser as $row){
+//	        if ($row[0] != $_SESSION['userLogged'] && (!in_array($row[0], $friendIdArray))){
+//	            array_push($friendIdArray, $row[0]);
+//	        }
+//	        if ($row[1] != $_SESSION['userLogged'] && (!in_array($row[1], $friendIdArray))){
+//	            array_push($friendIdArray, $row[1]);
+//	        }
+//	    }
 	    
 	    //Defriend button:    
 	    if(isset($_POST['defriendBtn'])){
 	        if (isset($_POST['defriend'])){
-	            foreach ($_POST['defriend'] as $row) //iterate and look for what was selected
+	            foreach ($_POST['defriend'] as $friendID) //iterate and look for what was selected
 	            {
 	                //for each selected line, delete the corresponding friend from friends' list
-	                $sql = "DELETE FROM friendship "
-	                        . "WHERE (friendship.Friend_RequesterId = :userId AND friendship.Friend_RequesteeId = :friendId) "
-	                        . "OR (friendship.Friend_RequesterId = :friendId AND friendship.Friend_RequesteeId = :userId)"; 
-	                $pStmt = $myPdo->prepare($sql);
-	                $pStmt->execute(array(':userId' => $_SESSION['userLogged'], ':friendId' => $row)); 
-	                $pStmt->commit;                 
+                        deleteFriend($userId, $friendId);
+//	                $sql = "DELETE FROM friendship "
+//	                        . "WHERE (friendship.Friend_RequesterId = :userId AND friendship.Friend_RequesteeId = :friendId) "
+//	                        . "OR (friendship.Friend_RequesterId = :friendId AND friendship.Friend_RequesteeId = :userId)"; 
+//	                $pStmt = $myPdo->prepare($sql);
+//	                $pStmt->execute(array(':userId' => $_SESSION['userLogged'], ':friendId' => $friendID)); 
+//	                $pStmt->commit;                 
 	            }
 	            header('Location: MyFriends.php'); //redirect to update table view
 	            exit;             
@@ -72,25 +77,27 @@ include(COMMON_PATH . '\Header.php');
 	            $validatorError = "You must select at least one checkbox!"; //at least one checkbox must be selected
 	        }          
 	    }
-	    
+            
 	    //Accept Selected Button
 	    if (isset($_POST['acceptBtn'])){
 	        if (isset($_POST['acceptDeny'])){
-	            foreach ($_POST['acceptDeny'] as $row){
-	            //update requestee status to accepted
-	            $sqlStatement = "UPDATE friendship SET status = 'accepted' "
-	                . "WHERE Friend_RequesterId = :requesteeId AND Friend_RequesteeId = :requesterId "; 
-	            $pStmt = $myPdo->prepare($sqlStatement);        
-	            $pStmt ->execute(array(':requesterId' => $_SESSION['userLogged'] , ':requesteeId' => $row ));      
-	            $pStmt->commit;
+	            foreach ($_POST['acceptDeny'] as $requesterId){
+                        acceptFriendRequest($userId, $requesterId);
+                        
+//	            //update requestee status to accepted
+//	            $sqlStatement = "UPDATE friendship SET status = 'accepted' "
+//	                . "WHERE Friend_Requester_Id = :requesteeId AND Friend_Requestee_Id = :requesterId "; 
+//	            $pStmt = $myPdo->prepare($sqlStatement);        
+//	            $pStmt ->execute(array(':requesterId' => $_SESSION['userLogged'] , ':requesteeId' => $row ));      
+//	            $pStmt->commit;
 	            
 	            //insert accepted status for main user         
-	            $sqlStatement = "INSERT INTO friendship (Friend_RequesterId, Friend_RequesteeId, Status) "
-	                    . "VALUES (:requesterId, :requesteeId, :status)";
-	            $pStmt = $myPdo->prepare($sqlStatement);        
-	            $pStmt ->execute(array(':requesterId' => $_SESSION['userLogged'] , ':requesteeId' => $row, ':status' => 'accepted' ));      
-	            $pStmt->commit;                                
-	            }
+//	            $sqlStatement = "INSERT INTO friendship (Friend_RequesterId, Friend_RequesteeId, Status) "
+//	                    . "VALUES (:requesterId, :requesteeId, :status)";
+//	            $pStmt = $myPdo->prepare($sqlStatement);        
+//	            $pStmt ->execute(array(':requesterId' => $_SESSION['userLogged'] , ':requesteeId' => $row, ':status' => 'accepted' ));      
+//	            $pStmt->commit;                                
+ 	            }
 	            header('Location: MyFriends.php'); //redirect to update table view
 	            exit; 
 	        }
@@ -103,14 +110,15 @@ include(COMMON_PATH . '\Header.php');
 	    //Deny Selected Button
 	    if (isset($_POST['denyBtn'])){
 	        if (isset($_POST['acceptDeny'])){
-	            foreach ($_POST['acceptDeny'] as $row){
-	                //delete request(pending) statement from database
-	                $sqlStatement = "DELETE FROM friendship "
-	                        . "WHERE friendship.Friend_RequesterId = :requesterId "
-	                        . "AND friendship.Friend_RequesteeId = :requesteeId ";
-	                $pStmt = $myPdo->prepare($sqlStatement);        
-	                $pStmt ->execute(array(':requesteeId' => $_SESSION['userLogged'] , ':requesterId' => $row ));      
-	                $pStmt->commit;  
+	            foreach ($_POST['acceptDeny'] as $requesterId){
+	                //deny request(pending) statement from database
+                        denyFriendRequest($userId, $requesterId);
+//	                $sqlStatement = "DELETE FROM friendship "
+//	                        . "WHERE friendship.Friend_RequesterId = :requesterId "
+//	                        . "AND friendship.Friend_RequesteeId = :requesteeId ";
+//	                $pStmt = $myPdo->prepare($sqlStatement);        
+//	                $pStmt ->execute(array(':requesteeId' => $_SESSION['userLogged'] , ':requesterId' => $row ));      
+//	                $pStmt->commit;  
 	            }
 	            header('Location: MyFriends.php'); //redirect to update table view
 	            exit;            
@@ -150,28 +158,48 @@ include(COMMON_PATH . '\Header.php');
 	            <div class='col-lg-4' style='color:red'> <?php print $validatorError;?></div><br>
 	            <tbody>
 	            <?php   
-	            foreach ($friendIdArray as $row){
-	                $sql="SELECT user.UserId, user.Name, album.Accessibility_Code "
-	                        . "FROM user LEFT JOIN album ON album.Owner_Id = user.UserId "
-	                        . "WHERE user.UserId = :userId "
-	                        . "ORDER BY user.UserId ";
-	                $pStmt = $myPdo->prepare($sql);
-	                $pStmt->execute ([ ':userId' => $row ]);
-	                $sharedAlbums = $pStmt->fetchAll(); 
-	                $albumCount = 0;
-	                foreach ($sharedAlbums as $albums)
-	                {
-	                    if ($albums[2] == "shared")
-	                    {
-	                        $albumCount = $albumCount + 1;   
-	                    }   
-	                }    
-	                    echo "<tr>";
-	                    echo "<td scope='col'><a href='FriendPictures.php?id=".$albums[0]."'>".$albums[1]."</a></td>"; // Name
-	                    echo "<td scope='col'>".$albumCount."</td>"; // Shared albums
-	                    echo "<td scope='col'><input type='checkbox' name='defriend[]' value='$albums[0]'/></td>"; // Defriend            
-	                    echo "</tr>";           
-	            }
+                    foreach($friends as $friend){
+                        $friendId = $friend->getUserId();
+                        $albums = getAllUserAlbums($friendId);
+                        $counter = 0;
+                        foreach($albums as $album){
+                            if($album->getAccessibilityCode() == "shared"){
+                                $counter++;
+                            }
+                        }
+                        echo "<tr>";
+                        echo "<td scope='col'><a href='FriendPictures.php?id=".$friendId."'>".$friend->getName()."</a></td>"; // Name
+                        echo "<td scope='col'>".$counter."</td>"; // Shared albums
+                        echo "<td scope='col'><input type='checkbox' name='defriend[]' value='$friendId'/></td>"; // Defriend            
+                        echo "</tr>";  
+                        
+                        
+                        
+                    }
+                    
+                    
+//	            foreach ($friendIdArray as $row){
+//	                $sql="SELECT user.UserId, user.Name, album.Accessibility_Code "
+//	                        . "FROM user LEFT JOIN album ON album.Owner_Id = user.UserId "
+//	                        . "WHERE user.UserId = :userId "
+//	                        . "ORDER BY user.UserId ";
+//	                $pStmt = $myPdo->prepare($sql);
+//	                $pStmt->execute ([ ':userId' => $row ]);
+//	                $sharedAlbums = $pStmt->fetchAll(); 
+//	                $albumCount = 0;
+//	                foreach ($sharedAlbums as $albums)
+//	                {
+//	                    if ($albums[2] == "shared")
+//	                    {
+//	                        $albumCount = $albumCount + 1;   
+//	                    }   
+//	                }    
+//	                    echo "<tr>";
+//	                    echo "<td scope='col'><a href='FriendPictures.php?id=".$albums[0]."'>".$albums[1]."</a></td>"; // Name
+//	                    echo "<td scope='col'>".$albumCount."</td>"; // Shared albums
+//	                    echo "<td scope='col'><input type='checkbox' name='defriend[]' value='$albums[0]'/></td>"; // Defriend            
+//	                    echo "</tr>";           
+//	            }
 	            ?>              
 	        </tbody>
 	        </table>
@@ -203,17 +231,19 @@ include(COMMON_PATH . '\Header.php');
 	            <tbody>
 	            <?php
 	            //getting a list of userId's where friendshipstatus = requested
-	            $sql = "SELECT user.UserId, user.Name FROM user "
-	                    . "INNER JOIN friendship ON friendship.Friend_RequesterId = user.UserId "
-	                    . "WHERE friendship.Status = 'request' AND friendship.Friend_RequesteeId = :userId ";        
-	            $pStmt = $myPdo->prepare($sql);
-	            $pStmt->execute ( [':userId' => $_SESSION['userLogged'] ]);
-	            $requestFriend = $pStmt->fetchAll();
-	            foreach ($requestFriend as $friendName)
+                    $friendRequests = getAllFriendRequests($userId);
+                    
+//	            $sql = "SELECT user.UserId, user.Name FROM user "
+//	                    . "INNER JOIN friendship ON friendship.Friend_RequesterId = user.UserId "
+//	                    . "WHERE friendship.Status = 'request' AND friendship.Friend_RequesteeId = :userId ";        
+//	            $pStmt = $myPdo->prepare($sql);
+//	            $pStmt->execute ( [':userId' => $_SESSION['userLogged'] ]);
+//	            $requestFriend = $pStmt->fetchAll();
+	            foreach ($friendRequests as $friendRequest)
 	            {
 	                echo "<tr>";
-	                echo "<td scope='col'>".$friendName[1]."</td>"; // Name
-	                echo "<td scope='col'><input type='checkbox' name='acceptDeny[]' value='$friendName[0]' /></td>"; // Accept or deny            
+	                echo "<td scope='col'>".$friendRequest->getName()."</td>"; // Name
+	                echo "<td scope='col'><input type='checkbox' name='acceptDeny[]' value='$friendRequest->getId()' /></td>"; // Accept or deny            
 	                echo "</tr>";
 	            }            
 	            ?>   
