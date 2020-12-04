@@ -77,10 +77,10 @@
 	    }
 	
 
-	    public function getThumbnailFilePath(){
-	        return ALBUM_THUMBNAILS_DIR."/".$this->fileName;
-	    }
-	
+//	    public function getThumbnailFilePath(){
+//	        return ALBUM_THUMBNAILS_DIR."/".$this->fileName;
+//	    }
+//	
 
 	    public function getOriginalFilePath(){
 	        return ORIGINAL_PICTURES_DIR."/".$this->fileName;

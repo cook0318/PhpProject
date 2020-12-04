@@ -19,7 +19,7 @@ $successMessage = "";
 $_SESSION['friendIdTxt'] = htmlspecialchars($_POST['friendIdTxt']);
 
 //validators
-if(isset($_POST['sendFriendRequest']))
+if(isset($_POST['sendFriendRequest'])){
     $friend = getUserFromID($friendIdTxt);
     if($friendIdTxt == $userId){
         $errorMessage = "You may not send a friend request to yourself!";
@@ -45,14 +45,14 @@ if(isset($_POST['sendFriendRequest']))
             }
         } else {
             createFriendRequest($userId, $friendIdTxt);
-            $successMessage = "Your request was sent to ". $friend->getName() . " (ID: " . $friend->getUserId() . "). "
-                        . "<br>" . "&nbsp &nbsp &nbsp" ."Once " . $friend->getName() . " accepts your request, you and ". $friend->getName() . " will be friends "
+            $successMessage = "<br>Your request was sent to ". $friend->getName() . " (ID: " . $friend->getUserId() . "). "
+                        . "<br>Once " . $friend->getName() . " accepts your request, you and ". $friend->getName() . " will be friends "
                         . "and will be able to see each others' shared albums.";
         }
         
         
     }
-}        
+}      
 include(COMMON_PATH . '\Header.php');
 
 ?>

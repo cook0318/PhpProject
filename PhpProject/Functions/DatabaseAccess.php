@@ -232,6 +232,15 @@ function deleteAlbum($albumId){
     return $success;
 }
 
+function updateAlbum($albumId, $date){
+    $PDO = Connect();
+    $sql = "UPDATE album set date_updated = :dateUpdated WHERE album_id = :albumId";
+    $preparedStatement = $PDO->prepare($sql);
+    $success = $preparedStatement->execute(['albumId' => $albumId,'dateUpdated' => $date]);
+    
+    return $success;
+}
+
 // Creates a friend request. Returns true if request was successful or false otherwise.
 function createFriendRequest($userId, $requesteeId){
     $PDO = Connect();
@@ -320,7 +329,7 @@ function getAllFriendRequests($userId){
         $friendRequests[] = $friendRequester;
     }
     
-    return $friendRequests;
+    return $friendRequests;                             //pictureId . filename   1,  1.jpg   2, 2.png 
 }
 
 // Gets a list of picture objects given an album Id.
@@ -350,5 +359,18 @@ function getFriendshipStatus($userLoggedID, $friendID){
     }
     
     return $friendship;
+}
+
+function getLastPictureId(){
+    $lastId = 0;
+    $PDO = Connect();
+    $sql = "SELECT picture_id from Picture order by picture_id DESC limit 1";
+    $preparedStatement = $PDO->prepare($sql);
+    if($preparedStatement->execute()){
+        $row = $preparedStatement->fetch(PDO::FETCH_ASSOC);
+        $lastId = $row['picture_id'];
+    }    
+    
+    return $lastId;
 }
 ?>

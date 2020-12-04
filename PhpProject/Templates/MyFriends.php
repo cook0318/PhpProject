@@ -75,7 +75,7 @@ include(COMMON_PATH . '\Header.php');
                 <hr>
 	        <form method='post' action=MyFriends.php> 
 	            <!--First table: FRIENDS-->
-	            <table class="table">
+	            <table class="myFriendsTable table centerThirdColumn">
 	            <!-- display table header -->
 	            <thead>
 	                <tr>
@@ -94,7 +94,7 @@ include(COMMON_PATH . '\Header.php');
 	            <!-- display table body -->             
 	            <div class='col-lg-4' style='color:red'> <?php print $validatorError;?></div><br>
 	            <tbody>
-	            <?php   
+<?php   
                     foreach($friends as $friend){
                         $friendId = $friend->getUserId();
                         $albums = getAllUserAlbums($friendId);
@@ -110,22 +110,22 @@ include(COMMON_PATH . '\Header.php');
                         echo "<td scope='col'><input type='checkbox' name='defriend[]' value='$friendId'/></td>"; // Defriend            
                         echo "</tr>";  
                     }
-?>              
-	        </tbody>
-	        </table>
+                    ?>              
+                        <tr>
+                            <td></td>
+                            <td></td>
+                            <td>
+                                <button type='submit' name='defriendBtn' class='btn btn-danger' onclick='return confirm("The selected friend will be defriended!")'>Defriend Selected</button>  
+                            </td>
+                        </tr>
+                        
+                    </tbody>
+                    </table>
+	  
 	
 
-	        <!--Defriend button:-->
-	        <div class='form-group row'>               
-	            <label for='' class='col-lg-7 col-form-label'><b></b> </label>            
-	            <div class='col-lg-3'>                    
-	            <button type='submit' name='defriendBtn' class='btn btn-primary col-lg-5' onclick='return confirm("The selected friend will be defriended!")'>Defriend Selected</button>  
-	            </div> 
-	        </div>     
-	
-
-	        <!--Second table: REQUESTS -->
-	            <br><br><table class="table">
+                    <!--Second table: REQUESTS -->
+	            <table class="myFriendsTable table centerSecondColumn">
 	            <!-- display table header -->
 	            <thead>
 	                <tr>
@@ -150,21 +150,17 @@ include(COMMON_PATH . '\Header.php');
 	                echo "</tr>";
 	            }            
 	            ?>   
+                        <tr>
+                            <td></td>
+                            <td><!--Accept/Deny buttons--> 
+                                <button type='submit' name='acceptBtn' class='btn btn-primary'>Accept Selected</button>  
+                                <button type='submit' name='denyBtn' class='btn btn-danger ' onclick='return confirm("The selected request will be denied!")'>Deny Selected</button>
+                            </td>
+                        </tr>
 	            </tbody>
-	        </table>    
-	
-	        <!--Accept/Deny buttons-->    
-	        <div class='form-group row'>               
-	            <label for='' class='col-lg-5 col-form-label'><b></b> </label>            
-	            <div class='col-lg-7'>                    
-	            <button type='submit' name='acceptBtn' class='btn btn-primary col-lg-2'>Accept Selected</button>  
-	                <div class='col-lg-3'>                    
-	                    <button type='submit' name='denyBtn' class='btn btn-primary ' onclick='return confirm("The selected request will be denied!")'>Deny Selected</button>
-	                </div> 
-	            </div> 
-	        </div>
-	        </form> 
-	    </div>
+                    </table>
+                </form> 
+            </div>
 
 <?php include(COMMON_PATH . '\Footer.php'); ?>
 	
