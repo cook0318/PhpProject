@@ -156,31 +156,46 @@ function notEmpty($value) {
     }
 }
 
-function save_uploaded_file($destinationPath, $file, $fileIndex, $fileId)
+function save_uploaded_file($destinationPath, $file, $fileIndex, $newFileNameAndExtension)
 {
     if (!file_exists($destinationPath))
     {
         mkdir($destinationPath);
     }
-
+    
+    // C:Windows/Temp
     $tempFilePath = $file['tmp_name'][$fileIndex];
-    $filePath = $destinationPath."/".$file['name'][$fileIndex];
+    
+    /// UserPhotos/Original       / myPhoto1.jpg
+//    $filePath = $destinationPath."/".$file['name'][$fileIndex];
 
-    $pathInfo = pathinfo($filePath);
-    $dir = $pathInfo['dirname'];
-    $ext = $pathInfo['extension'];
-    $fileName = $fileId.'.'.$ext;
+    
+    //// original file name inside Wnidows/Temp
+    //// new file location using the new name
+    
+    
+    //$pathInfo = pathinfo($filePath);
+    
+    // UserPhotos/Original/
+    //$dir = $pathInfo['dirname'];
+    
+    //jpg
+    //$ext = $pathInfo['extension'];
+    
+    
 
-    $filePath = $destinationPath."/".$fileName;
+    $filePath = $destinationPath."/".$newFileNameAndExtension;
 
 
     //make sure not to overwrite existing files 
-    $i="";
-    while (file_exists($filePath))
-    {	
-        $i++;
-        $filePath = $dir."/".$fileName."_".$i.".".$ext;
-    }
+//    $i="";
+//    while (file_exists($filePath))
+//    {	
+//        $i++;
+//        $filePath = $dir."/".$fileName."_".$i.".".$ext;
+//    }
+    
+    
     move_uploaded_file($tempFilePath, $filePath);
 
     return $filePath;

@@ -76,31 +76,21 @@ if($userHasAlbums){
                         $fileId = getLastPictureId() + 1;
                         $fileName = $fileId . '.' . $pathinfo['extension'];
                         
-                        savePicture($albumId, $fileName, $pictureTitle, $pictureDescription, $date);
+                            savePicture($albumId, $fileName, $pictureTitle, $pictureDescription, $date);
                         updateAlbum($albumId, $date);
 
                         
                         // CONTINUE FROM HERE
-                        $filePath = save_uploaded_file(ORIGINAL_PICTURES_DIR, $_FILES['fileUpload'], $i, $pic_id);
+                        $filePath = save_uploaded_file(ORIGINAL_PICTURES_DIR, $_FILES['fileUpload'], $i, $fileName);
 
                         $imageDetails = getimagesize($filePath);
 
                         if ($imageDetails && in_array($imageDetails[2], $supportedImageTypes)){
                             resamplePicture($filePath, ALBUM_PICTURES_DIR, IMAGE_MAX_WIDTH, IMAGE_MAX_HEIGHT);
-
-                            //resamplePicture($filePath, ALBUM_THUMBNAILS_DIR, THUMB_MAX_WIDTH, THUMB_MAX_HEIGHT);
-
-
-                            $pStmt = $myPdo->prepare($uSql);
-                            $pStmt->execute(array(
-                                ':albumId' => $uploadAlbum,
-                                ':dateUpdated' => $date));
                         } else {
                             $error = "Uploaded file is not a supported type"; 
                             unlink($filePath);
-                            $pStmt->rollback;
                         }
-                        $pStmt->commit;
                     }
                 } catch(PDOException $e) {
                     $fileError = $e->getMessage();

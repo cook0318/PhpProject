@@ -157,8 +157,9 @@ function getComments($pictureId){
 // Saves a picture to the database. Returns true if successful or false otherwise.
 function savePicture($albumId, $fileName, $title, $description, $dateAdded){
     $PDO = Connect();
-    $sql = "INSERT INTO Picture (album_id, file_name, title, description, date_added)"
-            . " VALUES( :albumId, :fileName, :title, :description, :dateAdded)";
+    //$sql = "INSERT INTO Picture (album_id, file_name, title, description, date_added)"
+    //        . " VALUES( :albumId, :fileName, :title, :description, :dateAdded)";
+    $sql = "INSERT INTO Picture VALUES(null, :albumId, :fileName, :title, :description, :dateAdded)";
     $preparedStatement = $PDO->prepare($sql);
     $success = $preparedStatement->execute(['albumId' => $albumId, 'fileName' => $fileName, 'title' => $title,
         'description' => $description, 'dateAdded' => $dateAdded]);
