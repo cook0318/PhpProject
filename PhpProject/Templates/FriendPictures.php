@@ -14,20 +14,25 @@ $_SESSION["lastPage"] = "FriendPictures";
 requireLogin();
 
 $user = getUserFromID($_SESSION['userLogged']);
+$name = $user->getName();
 
-// for testing - start
-$friend = getUserFromID('U0002');
-//$friend = getUserFromID(idEscape($_GET['id']));
-// for testing - end
+if(isset($_GET['id']) == false){
+    header('Location: ' . TEMPLATES_URL . "/MyFriends.php");
+}
 
-if(getFriendshipStatus($user->getUserId(), $friend->getUserId()) != "accepted") {
+$friend = getUserFromID(idEscape($_GET['id']));
+if($friend == null){
+    header('Location: ' . TEMPLATES_URL . "/MyFriends.php");
+}
+
+if(getFriendshipStatus($user->getUserId(), $friend->getUserId())->getStatus() != "accepted") {
     header('Location: ' . TEMPLATES_URL . "/MyFriends.php");
 }
 
 $friendName = $friend->getName();
 $friendId = $friend->getUserId();
 $friendAlbums = getAllUserAlbums($friendId);
-$hasAlbums = count($friendAlbums) > 0 ? true : false;
+$hasAlbums = getFirstSharedAlbumId($friendId) != 0 ? true : false;
 
 if($hasAlbums) {
 
@@ -37,7 +42,7 @@ if($hasAlbums) {
         $_SESSION['albumSelected'] = $_POST['albumId'];
     }
     if(!isset($_SESSION['albumSelected'])){
-        $_SESSION['albumSelected'] = $_POST['albumId'] ?? $friendAlbums[0]->getAlbumId();
+        $_SESSION['albumSelected'] = $_POST['albumId'] ?? getFirstSharedAlbumId($friendId);
     }
     // Gets all pictures from album selected
     $albumPictures = getAlbumPictures($_SESSION['albumSelected']);
@@ -78,7 +83,9 @@ if(isPostRequest() && $_POST["newCommentAdded"] == 1) {
 
 <body>
 <div class="container">
-    <h1 class="text-center m-0-p-10 m-b-10"><?php echo $friendName; ?>'s Pictures</h1>
+    <h1 class="m-0-p-10 m-b-10"><?php echo $friendName; ?>'s Pictures</h1>
+    <p>Welcome <b><?php print $name;?></b>! (Not you? Change user <a href="Login.php">here</a>)</p>
+    <hr>
     <?php if($hasAlbums) { ?> <!-- Page will be displayed case there are albums to be shown -->
     <div class="row">
         <div class="col-9">
@@ -103,10 +110,10 @@ if(isPostRequest() && $_POST["newCommentAdded"] == 1) {
                 <h2 class="text-center"><?php echo $pictureSelected->getTitle(); ?></h2>
             </div>
 
-            <div id="gallery">
+            <div class='p-b-10' id="gallery">
                 <div id="currentPicture"> <!-- Selected picture - big image display -->
                     <img 
-                    src="../UserPhotos/<?php echo $pictureSelected->getFileName(); ?>" 
+                        src="../UserPhotos/AlbumPictures/<?php echo $pictureSelected->getFileName(); ?>" 
                     alt="<?php echo $pictureSelected->getTitle(); ?>" 
                     class="img-current">
                 </div>
@@ -116,7 +123,7 @@ if(isPostRequest() && $_POST["newCommentAdded"] == 1) {
                         <?php foreach($albumPictures as $p) { ?>
                             <div class="thumbnail-item" id="<?php echo $p->getPictureId(); ?>" album-id="<?php echo $p->getAlbumId(); ?>">
                                 <img 
-                                src="../UserPhotos/<?php echo $p->getFileName(); ?>" 
+                                    src="../UserPhotos/Thumbnails/<?php echo $p->getFileName(); ?>" 
                                 alt="<?php echo $p->getTitle(); ?>" 
                                 class="img-thumbnail <?php if($p->getPictureId() == $_SESSION['pictureSelectedId']) { echo "bg-info"; } ?>">
                             </div>
@@ -166,6 +173,7 @@ if(isPostRequest() && $_POST["newCommentAdded"] == 1) {
         <p class="text-center m-0-p-10 m-b-10">There are no albums to be shown.</p>
     <?php }?>
 
+</div>
 </div>
 </body>
 

@@ -1,12 +1,3 @@
-/*
-To change this license header, choose License Headers in Project Properties.
-To change this template file, choose Tools | Templates
-and open the template in the editor.
-*/
-/* 
-    Created on : 23-May-2016, 4:56:39 PM
-    Author     : gongw
-*/
 .btn-min-width {
     min-width: 100px
 }
@@ -85,15 +76,10 @@ a.nav-link{
 }
 
 .buttonCardContainer{
-    
-    display: flex;
-    justify-content: space-between;
-}
-.goToAlbumBtn{
-    margin-right: 10px;
+
 }
 .deleteAlbumBtn{
-    margin-left: 10px;
+    float: right;
 }
 
 .linkButton{
@@ -133,14 +119,14 @@ a.nav-link{
 }
 
 .img-thumbnail {
-    /* width: 100px; */
-    /* height: 100px; */
+    width: 100px;
+    height: 100px;
     cursor: pointer;
 }
 
 .img-current {
-    /* width: 1024px; */
-    /* height: 800px; */
+    width: 100%; 
+    height: auto; 
 }
 
 #thumbnail-bar {
@@ -167,7 +153,42 @@ a.nav-link{
     margin-bottom: 10px;
 }
 
+.p-b-10 {
+    padding-bottom: 10px;
+}
+
 .m-0-p-50 {
     margin: 0;
     padding: 50px 0;
+}
+
+.buttonRow{
+    padding-left: 60%;
+}
+
+.centerThirdColumn td:nth-of-type(3), .centerThirdColumn th:nth-of-type(3){
+    width:300px;
+    text-align: center;
+}
+
+
+.centerSecondColumn td:nth-of-type(2),.centerSecondColumn th:nth-of-type(2){
+    text-align: center;
+}
+
+
+.myFriendsTable {
+    max-width: 80%;
+}
+
+.btn, .btn-sm{
+    width: 150px;
+}
+
+table .w-20{
+    width: 33%;
+}
+
+table .w-60{
+    width: 46%;
 }

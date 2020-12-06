@@ -5,12 +5,10 @@ require_once('../Functions/GeneralFunctions.php');
 $pageTitle = "Add Album";
 $_SESSION["lastPage"] = "AddAlbum";
 
-// redirect if necessary
-//requireLogin(); // you can comment this out to test your page without making login
+//requireLogin();
 
 // general page variables
-//$currentUser = getUserFromID($_SESSION['userLogged']); // for testing, use next line
-$currentUser = getUserFromID('user1'); // comment out/delete when not testing.
+$currentUser = getUserFromID($_SESSION['userLogged']);
 $name = $currentUser->getName();
 $userId = $currentUser->getUserId();
 
@@ -67,8 +65,8 @@ include(COMMON_PATH . '\Header.php'); ?>
 
 <body>
 <div class="container">
-    <h1>Create New Album</h1>
-    <p>Welcome <?php print($name)?>! (Not you? Change user <a href="NewUser.php">here</a>)</p>
+    <h1 class='m-0-p-10 m-b-10'>Create New Album</h1>
+    <p>Welcome <b><?php print $name;?></b>! (Not you? Change user <a href="Login.php">here</a>)</p>
     <hr>
     <form name='newAlbum' method='POST' action="">
     <table class='createAlbumInputs'>
@@ -90,7 +88,7 @@ include(COMMON_PATH . '\Header.php'); ?>
         </tr>
     </table>
         <button class='btn btn-primary' id='submitCreateAlbumButton' type='button' name='submitCreateAlbumButton'>Submit</button>
-        <button class='btn btn-primary' type='reset' name='reset' value='reset'>Clear</button>  
+        <a href="<?php echo TEMPLATES_URL . '/AddAlbum.php' ?>"<button type='reset' name='clear' class='btn btn-primary'>Clear</button></a>
         <?php print($successHTML) ?>
     </form>
 </div>
