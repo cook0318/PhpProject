@@ -15,6 +15,7 @@ $("#submitCreateAlbumButton").click(function(){
     }
 });
 
+//confirms deletion of an album.
 function confirmDelete(albumTitle, albumId){
     if(confirm("Are you sure you wish to delete '" + albumTitle + "'? All of its photos and their comments will be deletely permanently.")){
         $('#deleteAlbumIdInput').val(albumId);

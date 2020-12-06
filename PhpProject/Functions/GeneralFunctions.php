@@ -7,6 +7,17 @@ session_start();
 define('FUNCTIONS_PATH', dirname(__FILE__));            // path to: PhpProject/PhpProject/Functions 
 define('PROJECT_PATH', dirname(FUNCTIONS_PATH));        // path to: PhpProject/PhpProject
 define("COMMON_PATH", PROJECT_PATH . '/Common');        // path to: PhpProject/PhpProject/Common
+define('ORIGINAL_PICTURES_DIR', PROJECT_PATH . "/UserPhotos/Original");
+define('ALBUM_PICTURES_DIR', PROJECT_PATH . "/UserPhotos/AlbumPictures");
+define('ALBUM_THUMBNAILS_DIR', PROJECT_PATH . "/UserPhotos/Thumbnails");
+
+define('IMAGE_MAX_WIDTH', 1024);
+define('IMAGE_MAX_HEIGHT', 800);
+
+define('THUMB_MAX_WIDTH', 100);
+define('THUMB_MAX_HEIGHT', 100);
+
+$supportedImageTypes = array(IMAGETYPE_GIF, IMAGETYPE_JPEG, IMAGETYPE_PNG);
 
 $templates_end = strpos($_SERVER['SCRIPT_NAME'], '/Templates') + 10;
 define("TEMPLATES_URL", substr($_SERVER['SCRIPT_NAME'], 0, $templates_end)); // URL path to /PhpProject/Templates
@@ -22,10 +33,6 @@ require_once(FUNCTIONS_PATH . "/ValidationFunctions.php");
 
 date_default_timezone_set("America/Toronto");
 
-
-function getDefaultPhoto(){
-    return new Picture(0, 0, "NoPhotos.jpg", "No Photo Title", "Filler Photo", strtotime("1 January 1900"));
-}
 
 // Gets the HTML for the selectable Accessibility dropdown on the Create an Album page.
 // Input parameter is the currently selected option, if the form ends up being invalid.
@@ -46,39 +53,28 @@ function getAccessibilityDropdown($selectedAccessibility){
     return $returnHTML;
 }
 
+// used to genereate bootstrap cards with album details.
 function getAlbumCards($userId){
-    
     $albums = getAllUserAlbums($userId);
     if(count($albums) == 0){
-        return "<br><br><p>You do not currently have any albums.</p>";    
+        return "<br><p class='text-center'>You do not currently have any albums. Click <a href='AddAlbum.php'>here</a> to create one.</p>";    
     }
     
-    $returnHTML = "<div class='controlHolder'><a href='AddAlbum.php'>Create an album</a><button class='updateAccessibilitiesBtn btn btn-primary' "
-            . "type='submit' name='updateAccessibilities'>Update Accessibilities</button></div><div class='card-deck'>";
+    $returnHTML = "<p class='text-muted'>Click an  Album's title to view its photos.</p><div class='controlHolder'><a href='AddAlbum.php'>Create an album</a><button class='updateAccessibilitiesBtn btn-sm btn-primary' "
+            . "type='submit' name='updateAccessibilities'>Update Accessibilities</button></div><div class='card-deck justify-content-center'>";
     foreach($albums as $album){
         $albumId = $album->getAlbumId();
         $pictures = getAlbumPictures($album->getAlbumId());
-        $coverPhoto = $pictures[0];
-        if($coverPhoto == null){
-            $coverPhoto = getDefaultPhoto();
-        }
-        $coverPhotoPath = "../UserPhotos/{$coverPhoto->getFileName()}";
-        if(file_exists($coverPhotoPath)==false){
-            $coverPhotoPath = "../UserPhotos/PhotoUnavailable.jpg";
-        }
-        $coverPhotoTitle = $coverPhoto->getTitle();
+        
         $albumTitle = $album->getTitle();
         $albumDescription = $album->getDescription() == null ? "<em>No description</em>" : $album->getDescription();
         $photoCount = count($pictures) == 1 ? count($pictures) . " photo" : count($pictures) . " photos";
         $uploadDate = $album->getDateUpdated();
         $accessibilityDropdown = getAccessibilityDropdown($album->getAccessibilityCode());
         
-        
-        //<img class="card-img-top" src="$coverPhotoPath" alt="$coverPhotoTitle">
         $card = <<<HEREDOC
-        <div class="col-lg-4 col-sm-6 col-xs-12  d-flex align-items-stretch">
-          <div class='card bg-light mb-3 mt-3' id='$albumId'>
-            
+        <div class="col-lg-4 col-sm-6 col-xs-12  d-flex">
+          <div class='card bg-light mb-3 mt-3 mx-auto' id='$albumId'>
             <div class="card-body">
                 <h5 class="card-title"><button class='linkButton' type='submit' name='view' value='$albumId'</button>$albumTitle</h5>
                 <p class="card-text">$albumDescription</p>
@@ -92,7 +88,7 @@ function getAlbumCards($userId){
                     </select>
                 </p>
                 <div class="buttonCardContainer">
-                    <button class="btn btn-danger btn-sm deleteAlbumBtn" OnClick="confirmDelete('$albumTitle', $albumId)" type="button" value="$albumId">Delete Album</button>
+                    <button class="btn-danger btn-sm deleteAlbumBtn" OnClick="confirmDelete('$albumTitle', $albumId)" type="button" value="$albumId">Delete Album</button>
                 </div>
             </div>
           </div>
@@ -104,12 +100,30 @@ HEREDOC;
     $returnHTML .= "<input type='hidden' id='deleteAlbumIdInput' name='delete' value=''</div>";
     return $returnHTML;
 }
-    
 
+// validates uploaded files.
+function ValidateFileUpload($files, $name){
+    $allowed =  array('gif','png' ,'jpg', 'jpeg');
+    $total = count($_FILES[$name]['name']);
 
+    if (in_array(1, $files[$name]['error'], false))
+    {
+        return "Upload file is too large"; 
+    }
+    if (in_array(4, $files[$name]['error'], false))
+    {
+        return "No upload file specified"; 
+    }
 
-
-
+    //validates extensions and sizes for all files
+    for ($i=0; $i < $total ; $i++) {
+        $filename = $files[$name]['name'][$i];
+        $ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
+        if(!in_array($ext, $allowed)){
+            return 'Accepted picture types: JPG(JPEG), GIF and PNG!';
+        }
+    }
+}
 
 // checks if it is POST
 function isPostRequest() {
@@ -140,6 +154,131 @@ function notEmpty($value) {
     } else {
         return false;
     }
+}
+
+//saves uploaded photos to appropriate paths.
+function save_uploaded_file($destinationPath, $file, $fileIndex, $newFileNameAndExtension)
+{
+    if (!file_exists($destinationPath))
+    {
+        mkdir($destinationPath);
+    }
+    
+    $tempFilePath = $file['tmp_name'][$fileIndex];
+    
+    $filePath = $destinationPath."/".$newFileNameAndExtension;
+
+    move_uploaded_file($tempFilePath, $filePath);
+
+    return $filePath;
+}
+
+
+function resamplePicture($filePath, $destinationPath, $maxWidth, $maxHeight){
+    if (!file_exists($destinationPath))
+    {
+        mkdir($destinationPath);
+    }
+
+    $imageDetails = getimagesize($filePath);
+
+    $originalResource = null;
+    if ($imageDetails[2] == IMAGETYPE_JPEG) 
+    {
+        $originalResource = imagecreatefromjpeg($filePath);
+    } 
+    elseif ($imageDetails[2] == IMAGETYPE_PNG) 
+    {
+        $originalResource = imagecreatefrompng($filePath);
+    } 
+    elseif ($imageDetails[2] == IMAGETYPE_GIF) 
+    {
+        $originalResource = imagecreatefromgif($filePath);
+    }
+    $widthRatio = $imageDetails[0] / $maxWidth;
+    $heightRatio = $imageDetails[1] / $maxHeight;
+    $ratio = max($widthRatio, $heightRatio);
+
+    $newWidth = $imageDetails[0] / $ratio;
+    $newHeight = $imageDetails[1] / $ratio;
+
+    $newImage = imagecreatetruecolor($newWidth, $newHeight);
+
+    $success = imagecopyresampled($newImage, $originalResource, 0, 0, 0, 0, $newWidth, $newHeight, $imageDetails[0], $imageDetails[1]);
+
+    if (!$success)
+    {
+        imagedestroy(newImage);
+        imagedestroy(originalResource);
+        return "";
+    }
+    $pathInfo = pathinfo($filePath);
+    $newFilePath = $destinationPath."/".$pathInfo['filename'];
+    if ($imageDetails[2] == IMAGETYPE_JPEG) 
+    {
+        $newFilePath .= ".jpg";
+        $success = imagejpeg($newImage, $newFilePath, 100);
+    } 
+    elseif ($imageDetails[2] == IMAGETYPE_PNG) 
+    {
+        $newFilePath .= ".png";
+        $success = imagepng($newImage, $newFilePath, 0);
+    } 
+    elseif ($imageDetails[2] == IMAGETYPE_GIF) 
+    {
+        $newFilePath .= ".gif";
+        $success = imagegif($newImage, $newFilePath);
+    }
+
+    imagedestroy($newImage);
+    imagedestroy($originalResource);
+
+    if (!$success)
+    {
+        return "";
+    }
+    else
+    {
+        return $newFilePath;
+    }
+}
+
+
+function rotateImage($filePath, $degrees)
+{
+    $imageDetails = getimagesize($filePath);
+
+    $originalResource = null;
+    if ($imageDetails[2] == IMAGETYPE_JPEG) 
+    {
+        $originalResource = imagecreatefromjpeg($filePath);
+    } 
+    elseif ($imageDetails[2] == IMAGETYPE_PNG) 
+    {
+        $originalResource = imagecreatefrompng($filePath);
+    } 
+    elseif ($imageDetails[2] == IMAGETYPE_GIF) 
+    {
+        $originalResource = imagecreatefromgif($filePath);
+    }
+
+    $rotatedResource = imagerotate($originalResource, $degrees, 0);
+
+    if ($imageDetails[2] == IMAGETYPE_JPEG) 
+    {
+        $success = imagejpeg($rotatedResource, $filePath, 100);
+    } 
+    elseif ($imageDetails[2] == IMAGETYPE_PNG) 
+    {
+        $success = imagepng($rotatedResource, $filePath, 0);
+    } 
+    elseif ($imageDetails[2] == IMAGETYPE_GIF) 
+    {
+        $success = imagegif($rotatedResource, $filePath);
+    }
+
+    imagedestroy($rotatedResource);
+    imagedestroy($originalResource);
 }
 
 ?>
