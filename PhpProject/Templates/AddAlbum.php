@@ -5,7 +5,7 @@ require_once('../Functions/GeneralFunctions.php');
 $pageTitle = "Add Album";
 $_SESSION["lastPage"] = "AddAlbum";
 
-//requireLogin();
+requireLogin();
 
 // general page variables
 $currentUser = getUserFromID($_SESSION['userLogged']);
