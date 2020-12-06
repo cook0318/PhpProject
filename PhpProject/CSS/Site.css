@@ -1,0 +1,194 @@
+.btn-min-width {
+    min-width: 100px
+}
+.vertical-margin {
+    margin-bottom: 5px;
+    margin-top: 5px
+}
+.horizontal-margin {
+    margin-left: 5px;
+    margin-right: 5px
+}
+.content-center {
+    align-content: center
+}
+.no-padding {
+    padding: 0px
+}
+.no-margin {
+    margin: 0px
+}
+.error    { color: red }
+.distinct { color: blue }
+
+.disableLink {
+    pointer-events: none;
+}
+.distinct { color: blue } 
+.success { color: green }
+
+a.nav-link{
+    color: white;
+}
+
+.relative{
+    position: relative;
+}
+
+.updateAccessibilitiesBtn{
+    position: absolute;
+    right: 0;
+}
+
+.card{
+    box-shadow: 3px 3px 3px #0e1316;
+}
+.card-img-top{
+    width: 100%;
+    height: 30vh;
+    object-fit: cover;
+}
+.card-body{
+    padding: 0.75rem;
+}
+
+.card-text{
+    max-height: 6rem;
+}
+.card-text::-webkit-scrollbar {
+    width: 6px;               
+}
+.card-text::-webkit-scrollbar-track {
+    background: lightgray;
+}
+.card-text::-webkit-scrollbar-thumb {
+    background-color: graytext;    
+    border-radius: 5px;       
+}
+
+.card-body .card-text{
+    height: 80%;
+    overflow: auto;
+}
+
+.card-footer{
+    font-size: small;
+}
+
+.buttonCardContainer{
+
+}
+.deleteAlbumBtn{
+    float: right;
+}
+
+.linkButton{
+    background-color: transparent;
+    border: none;
+    color: blue;
+    padding: 0;
+    text-align: left;
+}
+.linkButton:hover{
+    text-decoration: underline;
+}
+
+.createAlbumInputs td{
+    padding-bottom: 1rem;
+    padding-left: 1rem;
+}
+
+.setWidth10{
+    width : 100%;
+}
+
+.smallSelect{
+    display: inline;
+    font-size: small;
+    max-width: 60%;
+}
+
+.controlHolder{
+    padding: 0.6rem 0;
+    display: flex;
+    align-items: center;
+}
+
+.hidden {
+    display: none;
+}
+
+.img-thumbnail {
+    width: 100px;
+    height: 100px;
+    cursor: pointer;
+}
+
+.img-current {
+    width: 100%; 
+    height: auto; 
+}
+
+#thumbnail-bar {
+    overflow: auto;
+    white-space: nowrap;
+}
+
+#description-comments {
+    overflow: auto;
+    white-space: normal;
+    max-height: 30rem;
+}
+
+.thumbnail-item {
+    display: inline;
+}
+
+.m-0-p-10 {
+    margin: 0;
+    padding: 10px 0;
+}
+
+.m-b-10 {
+    margin-bottom: 10px;
+}
+
+.p-b-10 {
+    padding-bottom: 10px;
+}
+
+.m-0-p-50 {
+    margin: 0;
+    padding: 50px 0;
+}
+
+.buttonRow{
+    padding-left: 60%;
+}
+
+.centerThirdColumn td:nth-of-type(3), .centerThirdColumn th:nth-of-type(3){
+    width:300px;
+    text-align: center;
+}
+
+
+.centerSecondColumn td:nth-of-type(2),.centerSecondColumn th:nth-of-type(2){
+    text-align: center;
+}
+
+
+.myFriendsTable {
+    max-width: 80%;
+}
+
+.btn, .btn-sm{
+    width: 150px;
+}
+
+table .w-20{
+    width: 33%;
+}
+
+table .w-60{
+    width: 46%;
+}
