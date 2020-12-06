@@ -16,7 +16,7 @@ $_SESSION["lastPage"] = "MyPictures";
 requireLogin();
 
 $user = getUserFromID($_SESSION['userLogged']);
-
+$name = $user->getName();
 $userAlbums = getAllUserAlbums($user->getUserId());
 $hasAlbums = count($userAlbums) > 0 ? true : false;
 
@@ -68,7 +68,9 @@ if(isPostRequest() && $_POST["newCommentAdded"] == 1) {
 
 <body>
 <div class="container">
-    <h1 class="text-center m-0-p-10 m-b-10">My Pictures</h1>
+    <h1 class="m-0-p-10 m-b-10">My Pictures</h1>
+    <p>Welcome <b><?php print $name;?></b>! (Not you? Change user <a href="Login.php">here</a>)</p>
+    <hr>
     <?php if($hasAlbums) { ?> <!-- Page will be displayed case there are albums to be shown -->
     <div class="row">
         <div class="col-9">
@@ -92,10 +94,10 @@ if(isPostRequest() && $_POST["newCommentAdded"] == 1) {
                 <h2 class="text-center"><?php echo $pictureSelected->getTitle(); ?></h2>
             </div>
 
-            <div id="gallery">
+            <div id="gallery" class='p-b-10'>
                 <div id="currentPicture"> <!-- Selected picture - big image display -->
                     <img 
-                    src="../UserPhotos/<?php echo $pictureSelected->getFileName(); ?>" 
+                    src="../UserPhotos/AlbumPictures/<?php echo $pictureSelected->getFileName(); ?>" 
                     alt="<?php echo $pictureSelected->getTitle(); ?>" 
                     class="img-current">
                 </div>
@@ -105,7 +107,7 @@ if(isPostRequest() && $_POST["newCommentAdded"] == 1) {
                         <?php foreach($albumPictures as $p) { ?>
                             <div class="thumbnail-item" id="<?php echo $p->getPictureId(); ?>" album-id="<?php echo $p->getAlbumId(); ?>">
                                 <img 
-                                src="../UserPhotos/<?php echo $p->getFileName(); ?>" 
+                                    src="../UserPhotos/Thumbnails/<?php echo $p->getFileName(); ?>" 
                                 alt="<?php echo $p->getTitle(); ?>" 
                                 class="img-thumbnail <?php if($p->getPictureId() == $_SESSION['pictureSelectedId']) { echo "bg-info"; } ?>">
                             </div>
@@ -139,7 +141,7 @@ if(isPostRequest() && $_POST["newCommentAdded"] == 1) {
                     <textarea name="newComment" id="newComment" class="form-control" placeholder="Leave comment..."></textarea>
                 </div>
                 <input type="text" name="newCommentAdded" id="newCommentAdded" class="hidden" value="0">
-                <input type="submit" id="addComment" class="btn btn-primary" value="Add Comment">
+                <input type="submit" id="addComment" class="btn-sm btn-primary" value="Add Comment">
             </form>
         </div>
         <?php } else { ?>
@@ -151,7 +153,7 @@ if(isPostRequest() && $_POST["newCommentAdded"] == 1) {
     </div>
 
     <?php }} else { ?> <!-- Page will be displayed case there are NO albums to be shown -->
-        <p class="text-center m-0-p-10 m-b-10">There are no albums to be shown.</p>
+        <p class="text-center m-0-p-10 m-b-10">There are no albums to be shown.  Click <a href='AddAlbum.php'>here</a> to create an album. </p>
     <?php }?>
 
 </div>

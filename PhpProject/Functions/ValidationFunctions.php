@@ -126,4 +126,18 @@ function validateComment ($comment) {
     }
 }
 
+// ensures title is less than 256 characters.
+function ValidatePictureTitle($pictureTitle){
+    if (strlen($pictureTitle) > 256) {
+        return "Title cannot exceed 256 characters.";
+    }
+}
+
+// ensures description is less than 3000 characters.
+function ValidatePictureDescription($pictureDescription){
+    if (strlen($pictureDescription) > 3000) {
+        return "Description cannot exceed 3000 characters.";
+    }
+}
+
 ?>

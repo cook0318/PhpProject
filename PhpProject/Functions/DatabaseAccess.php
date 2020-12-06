@@ -88,12 +88,12 @@ function updateAlbumAccessibility($accessibilityCode, $albumId){
 function logIn($id, $password){
     $user = null;
     $PDO = Connect();
-    $sql = "SELECT * FROM `user` WHERE `user_id` = :userId";
+    $sql = "SELECT * FROM `user` WHERE `userId` = :userId";
     $preparedStatement = $PDO->prepare($sql);
     $preparedStatement->execute(['userId' => idEscape($id)]);
     $row = $preparedStatement->fetch(PDO::FETCH_ASSOC);
     if(password_verify($password, $row["password"])){
-        $_SESSION["userLogged"] = $row["user_id"];
+        $_SESSION["userLogged"] = $row["userId"];
         return true;
     } else {
         return false;
@@ -106,7 +106,7 @@ function createUser($id, $name, $phone, $password){
 
     $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 
-    $sql = "INSERT INTO `user` (`user_id`, `name`, `phone`, `password`) VALUES (?, ?, ?, ?)";
+    $sql = "INSERT INTO `user` (`userId`, `name`, `phone`, `password`) VALUES (?, ?, ?, ?)";
     $preparedStatement = $PDO->prepare($sql);
     $success = $preparedStatement->execute([idEscape($id), $name, $phone, $hashedPassword]);
     if($success) { $_SESSION["userLogged"] = idEscape($id); }
@@ -118,12 +118,12 @@ function createUser($id, $name, $phone, $password){
 function getUserFromID($id){
     $user = null;
     $PDO = Connect();
-    $sql = "SELECT user_id, name, phone FROM User WHERE user_id = :userId";
+    $sql = "SELECT userId, name, phone FROM User WHERE userId = :userId";
     $preparedStatement = $PDO->prepare($sql);
     if($preparedStatement->execute(['userId' => idEscape($id)])){
         $row = $preparedStatement->fetch(PDO::FETCH_ASSOC);
         if($row != 0){
-            $user = new User($row['user_id'], $row['name'], $row['phone']);
+            $user = new User($row['userId'], $row['name'], $row['phone']);
         }
     }
     
@@ -141,6 +141,7 @@ function createComment($commenterId, $pictureId, $commentText, $date){
     return $success;
 }
 
+// gets all comments on a photo and returns an array of comment objects.
 function getComments($pictureId){
     $comments = [];
     $PDO = Connect();
@@ -157,12 +158,9 @@ function getComments($pictureId){
 // Saves a picture to the database. Returns true if successful or false otherwise.
 function savePicture($albumId, $fileName, $title, $description, $dateAdded){
     $PDO = Connect();
-    //$sql = "INSERT INTO Picture (album_id, file_name, title, description, date_added)"
-    //        . " VALUES( :albumId, :fileName, :title, :description, :dateAdded)";
     $sql = "INSERT INTO Picture VALUES(null, :albumId, :fileName, :title, :description, :dateAdded)";
     $preparedStatement = $PDO->prepare($sql);
-    $success = $preparedStatement->execute(['albumId' => $albumId, 'fileName' => $fileName, 'title' => $title,
-        'description' => $description, 'dateAdded' => $dateAdded]);
+    $success = $preparedStatement->execute(['albumId' => $albumId, 'fileName' => $fileName, 'title' => $title, 'description' => $description, 'dateAdded' => $dateAdded]);
     
     return $success;
 }
@@ -179,8 +177,6 @@ function deletePicture($pictureId){
         $success = $preparedStatement2->execute(['pictureId' => $pictureId]);
     }
     
-    // EVENTUALLY ADD CODE TO ACTUALLY DELETE THE FILE
-    
     return $success;
 }
 
@@ -188,18 +184,18 @@ function deletePicture($pictureId){
 function getAlbumPictures($albumId){
     $pictures = [];
     $PDO = Connect();
-    $sql = "SELECT picture_id, file_name, title, description, date_added FROM Picture WHERE album_id = :albumId";
+    $sql = "SELECT picture_id, fileName, title, description, date_added FROM Picture WHERE album_id = :albumId";
     $preparedStatement = $PDO->prepare($sql);
     $preparedStatement->execute(['albumId' => $albumId]);
     foreach($preparedStatement as $row){
-        $picture = new Picture($row['picture_id'], $albumId, $row['file_name'], $row['title'], $row['description'], $row['date_added']);
+        $picture = new Picture($row['picture_id'], $albumId, $row['fileName'], $row['title'], $row['description'], $row['date_added']);
         $pictures[] = $picture;
     }
     
     return $pictures;
 }
 
-
+// returns the album object for a given ID.
 function getAlbumFromId($albumId){
     $album = "";
     $PDO = Connect();
@@ -215,7 +211,7 @@ function getAlbumFromId($albumId){
     return $album;
 }
 
-// Deletes all photos in an album, then deletes the album itself.
+// Deletes all photos in an album, deletes photos from filepaths, then deletes the album itself.
 // Returns true if successful, otherwise returns false.
 function deleteAlbum($albumId){
     $pictures = getAlbumPictures($albumId);
@@ -224,6 +220,10 @@ function deleteAlbum($albumId){
         if($success == false){
             return false;
         }
+        
+        unlink($picture->getAlbumFilePath());
+        unlink($picture->getThumbnailFilePath());
+        unlink($picture->getOriginalFilePath());
     }
     $PDO = Connect();
     $sql =  "DELETE FROM album WHERE album_id = :albumId";
@@ -233,6 +233,7 @@ function deleteAlbum($albumId){
     return $success;
 }
 
+//updates album's dateUpdated with a new date.
 function updateAlbum($albumId, $date){
     $PDO = Connect();
     $sql = "UPDATE album set date_updated = :dateUpdated WHERE album_id = :albumId";
@@ -255,7 +256,7 @@ function createFriendRequest($userId, $requesteeId){
 // Accepts a friend request. Returns true if accept was successful or false otherwise.
 function acceptFriendRequest($userId, $requesterId){
     $PDO = Connect();
-    $sql = "UPDATE Friendship SET Status = 'accepted' WHERE friend_requester_id = :requesterId AND friend_requestee_id = :userId";
+    $sql = "UPDATE Friendship SET Status = 'accepted' WHERE friend_requesterId = :requesterId AND friend_requesteeId = :userId";
     $preparedStatement = $PDO->prepare($sql);
     $success = $preparedStatement->execute(['userId' => $userId, 'requesterId' => $requesterId]);
     
@@ -266,8 +267,8 @@ function acceptFriendRequest($userId, $requesterId){
 function deleteFriend($userId, $friendId){
     $PDO = Connect();
     $sql = "DELETE FROM Friendship "
-                . "WHERE ((friend_requester_id = :userId AND friend_requestee_id= :friendId) "
-                . "  OR (friend_requester_id = :friendId AND friend_requestee_id= :userId)) "
+                . "WHERE ((friend_requesterId = :userId AND friend_requesteeId= :friendId) "
+                . "  OR (friend_requesterId = :friendId AND friend_requesteeId= :userId)) "
                 . "    AND Status='accepted'";
     $preparedStatement = $PDO->prepare($sql);
     $success = $preparedStatement->execute(['userId' => $userId, 'friendId' => $friendId]);
@@ -278,7 +279,7 @@ function deleteFriend($userId, $friendId){
 // Denies a friend request. Returns true if deny was success or false otherwise.
 function denyFriendRequest($userId, $requesterId){
     $PDO = Connect();
-    $sql =  "DELETE FROM Friendship WHERE friend_requester_id = :requesterId AND friend_requestee_id = :userId AND Status='request'";
+    $sql =  "DELETE FROM Friendship WHERE friend_requesterId = :requesterId AND friend_requesteeId = :userId AND Status='request'";
     $preparedStatement = $PDO->prepare($sql);
     $success = $preparedStatement->execute(['userId' => $userId, 'requesterId' => $requesterId]);
     
@@ -289,24 +290,24 @@ function denyFriendRequest($userId, $requesterId){
 function getAllFriends($userId){
     $friends = [];
     $PDO = Connect();
-    $sql = "SELECT friend_requestee_id FROM Friendship "
-                . "WHERE friend_requester_id = :userId AND status = 'accepted'";
+    $sql = "SELECT friend_requesteeId FROM Friendship "
+                . "WHERE friend_requesterId = :userId AND status = 'accepted'";
     $preparedStatement = $PDO->prepare($sql);
     $preparedStatement->execute(['userId' => $userId]);
     foreach($preparedStatement as $row){
-        $friendId = $row['Friend_Requestee_Id'];
+        $friendId = $row['friend_requesteeId'];
         $user = getUserFromID($friendId);
         if(is_null($user) == false){
             $friends[] = $user;
         }
     }
     
-    $sql1 = "SELECT friend_requester_id FROM Friendship "
-                . "WHERE friend_requestee_id = :userId AND status = 'accepted'";
+    $sql1 = "SELECT friend_requesterId FROM Friendship "
+                . "WHERE friend_requesteeId = :userId AND status = 'accepted'";
     $preparedStatement1 = $PDO->prepare($sql1);
     $preparedStatement1->execute(['userId' => $userId]);
     foreach($preparedStatement1 as $row){
-        $friendId = $row['friend_requester_id'];
+        $friendId = $row['friend_requesterId'];
         $user = getUserFromID($friendId);
         if(is_null($user) == false){
             $friends[] = $user;
@@ -320,17 +321,17 @@ function getAllFriends($userId){
 function getAllFriendRequests($userId){
     $friendRequests = [];
     $PDO = Connect();
-    $sql = "SELECT friend_requester_id FROM Friendship "
-                . "WHERE friend_requestee_id = :userId AND status = 'request'";
+    $sql = "SELECT friend_requesterId FROM Friendship "
+                . "WHERE friend_requesteeId = :userId AND status = 'request'";
     $preparedStatement = $PDO->prepare($sql);
     $preparedStatement->execute(['userId' => $userId]);
     foreach($preparedStatement as $row){
-        $friendId = $row['friend_requester_id'];
+        $friendId = $row['friend_requesterId'];
         $friendRequester = getUserFromID($friendId);
         $friendRequests[] = $friendRequester;
     }
     
-    return $friendRequests;                             //pictureId . filename   1,  1.jpg   2, 2.png 
+    return $friendRequests; 
 }
 
 // Gets a list of picture objects given an album Id.
@@ -340,7 +341,7 @@ function getPictureById($pictureId){
     $preparedStatement = $PDO->prepare($sql);
     if($preparedStatement->execute(['pictureId' => $pictureId])){
         $row = $preparedStatement->fetch(PDO::FETCH_ASSOC);
-        $picture = new Picture($row['picture_id'], $row['album_id'], $row['file_name'], $row['title'], $row['description'], $row['date_added']);
+        $picture = new Picture($row['picture_id'], $row['album_id'], $row['fileName'], $row['title'], $row['description'], $row['date_added']);
     }    
     return $picture;
 }
@@ -349,19 +350,20 @@ function getPictureById($pictureId){
 function getFriendshipStatus($userLoggedID, $friendID){
     $friendship = null;
     $PDO = Connect();
-    $sql = "SELECT * FROM `friendship` WHERE (`friend_requester_id` = :userID and `friend_requestee_id` = :friendID) "
-            . "OR (`friend_requestee_id` = :userID and `friend_requester_id` = :friendID)";
+    $sql = "SELECT * FROM `friendship` WHERE (`friend_requesterId` = :userID and `friend_requesteeId` = :friendID) "
+            . "OR (`friend_requesteeId` = :userID and `friend_requesterId` = :friendID)";
     $preparedStatement = $PDO->prepare($sql);
     if($preparedStatement->execute(['userID' => idEscape($userLoggedID), 'friendID' => idEscape($friendID)])){
         $row = $preparedStatement->fetch(PDO::FETCH_ASSOC);
         if($row != 0){
-            $friendship = new Friendship($row['friend_requester_id'], $row['friend_requestee_id'], $row['status']);
+            $friendship = new Friendship($row['friend_requesterId'], $row['friend_requesteeId'], $row['status']);
         }
     }
     
     return $friendship;
 }
 
+// returns the last added picture ID.
 function getLastPictureId(){
     $lastId = 0;
     $PDO = Connect();
@@ -373,5 +375,20 @@ function getLastPictureId(){
     }    
     
     return $lastId;
+}
+
+// when a user accesses a friends albums, get the first shared album to make selected
+// and to also check if they have any shared albums.
+function getFirstSharedAlbumId($friendId){
+    $albumId = 0;
+    $PDO = Connect();
+    $sql = "SELECT album_id from Album WHERE owner_id = :ownerId and accessibility_code = 'shared' order by album_id ASC limit 1";
+    $preparedStatement = $PDO->prepare($sql);
+    if($preparedStatement->execute(['ownerId' => $friendId])){
+        $row = $preparedStatement->fetch(PDO::FETCH_ASSOC);
+        $albumId = $row['album_id'];
+    }    
+    
+    return $albumId;
 }
 ?>

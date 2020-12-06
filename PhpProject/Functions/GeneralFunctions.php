@@ -53,15 +53,15 @@ function getAccessibilityDropdown($selectedAccessibility){
     return $returnHTML;
 }
 
+// used to genereate bootstrap cards with album details.
 function getAlbumCards($userId){
-    
     $albums = getAllUserAlbums($userId);
     if(count($albums) == 0){
-        return "<br><br><p>You do not currently have any albums.</p>";    
+        return "<br><p class='text-center'>You do not currently have any albums. Click <a href='AddAlbum.php'>here</a> to create one.</p>";    
     }
     
-    $returnHTML = "<div class='controlHolder'><a href='AddAlbum.php'>Create an album</a><button class='updateAccessibilitiesBtn btn btn-primary' "
-            . "type='submit' name='updateAccessibilities'>Update Accessibilities</button></div><div class='card-deck'>";
+    $returnHTML = "<p class='text-muted'>Click an  Album's title to view its photos.</p><div class='controlHolder'><a href='AddAlbum.php'>Create an album</a><button class='updateAccessibilitiesBtn btn-sm btn-primary' "
+            . "type='submit' name='updateAccessibilities'>Update Accessibilities</button></div><div class='card-deck justify-content-center'>";
     foreach($albums as $album){
         $albumId = $album->getAlbumId();
         $pictures = getAlbumPictures($album->getAlbumId());
@@ -73,9 +73,8 @@ function getAlbumCards($userId){
         $accessibilityDropdown = getAccessibilityDropdown($album->getAccessibilityCode());
         
         $card = <<<HEREDOC
-        <div class="col-lg-4 col-sm-6 col-xs-12  d-flex align-items-stretch">
-          <div class='card bg-light mb-3 mt-3' id='$albumId'>
-            
+        <div class="col-lg-4 col-sm-6 col-xs-12  d-flex">
+          <div class='card bg-light mb-3 mt-3 mx-auto' id='$albumId'>
             <div class="card-body">
                 <h5 class="card-title"><button class='linkButton' type='submit' name='view' value='$albumId'</button>$albumTitle</h5>
                 <p class="card-text">$albumDescription</p>
@@ -89,7 +88,7 @@ function getAlbumCards($userId){
                     </select>
                 </p>
                 <div class="buttonCardContainer">
-                    <button class="btn btn-danger btn-sm deleteAlbumBtn" OnClick="confirmDelete('$albumTitle', $albumId)" type="button" value="$albumId">Delete Album</button>
+                    <button class="btn-danger btn-sm deleteAlbumBtn" OnClick="confirmDelete('$albumTitle', $albumId)" type="button" value="$albumId">Delete Album</button>
                 </div>
             </div>
           </div>
@@ -102,6 +101,7 @@ HEREDOC;
     return $returnHTML;
 }
 
+// validates uploaded files.
 function ValidateFileUpload($files, $name){
     $allowed =  array('gif','png' ,'jpg', 'jpeg');
     $total = count($_FILES[$name]['name']);
@@ -156,6 +156,7 @@ function notEmpty($value) {
     }
 }
 
+//saves uploaded photos to appropriate paths.
 function save_uploaded_file($destinationPath, $file, $fileIndex, $newFileNameAndExtension)
 {
     if (!file_exists($destinationPath))
@@ -163,52 +164,21 @@ function save_uploaded_file($destinationPath, $file, $fileIndex, $newFileNameAnd
         mkdir($destinationPath);
     }
     
-    // C:Windows/Temp
     $tempFilePath = $file['tmp_name'][$fileIndex];
     
-    /// UserPhotos/Original       / myPhoto1.jpg
-//    $filePath = $destinationPath."/".$file['name'][$fileIndex];
-
-    
-    //// original file name inside Wnidows/Temp
-    //// new file location using the new name
-    
-    
-    //$pathInfo = pathinfo($filePath);
-    
-    // UserPhotos/Original/
-    //$dir = $pathInfo['dirname'];
-    
-    //jpg
-    //$ext = $pathInfo['extension'];
-    
-    
-
     $filePath = $destinationPath."/".$newFileNameAndExtension;
 
-
-    //make sure not to overwrite existing files 
-//    $i="";
-//    while (file_exists($filePath))
-//    {	
-//        $i++;
-//        $filePath = $dir."/".$fileName."_".$i.".".$ext;
-//    }
-    
-    
     move_uploaded_file($tempFilePath, $filePath);
 
     return $filePath;
 }
 
 
-function resamplePicture($filePath, $destinationPath, $maxWidth, $maxHeight)
-{
+function resamplePicture($filePath, $destinationPath, $maxWidth, $maxHeight){
     if (!file_exists($destinationPath))
     {
         mkdir($destinationPath);
     }
-
 
     $imageDetails = getimagesize($filePath);
 
@@ -269,7 +239,7 @@ function resamplePicture($filePath, $destinationPath, $maxWidth, $maxHeight)
     }
     else
     {
-        return newFilePath;
+        return $newFilePath;
     }
 }
 

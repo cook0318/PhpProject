@@ -3,6 +3,8 @@
 require_once('../Functions/GeneralFunctions.php');
 $pageTitle = "Log In";
 
+unset($_SESSION['albumSelected']);
+unset($_SESSION['pictureSelectedId']);
 unset($_SESSION['userLogged']);
 
 $id = $_POST['txtId'] ?? '';
@@ -33,7 +35,7 @@ if(isPostRequest()) {
 
 <body>
     <div class="container">
-        <h1>Log In</h1>
+        <h1 class='m-0-p-10 m-b-10'>Log In</h1>
         <form class="form-horizontal" action="" method="post">
             <hr class="solid-divider" />
             <p class="text-muted">You need to <span><a href="NewUser.php">sign up</a></span> if you are a new user</p>
@@ -52,8 +54,13 @@ if(isPostRequest()) {
                 </div>
                 <p class="error"><?php echo $errors["password"]; ?></p>
             </div>
-            <button type="submit" class="btn btn-primary">Submit</button>
-            <a href="<?php echo TEMPLATES_URL . '/Login.php' ?>"><button type="button" class="btn btn-primary">Clear</button></a>
+            <div class="form-group row">
+                <div class='col-sm-2'></div>
+                <div class='col-sm-4'>
+                    <button type="submit" class="btn-sm btn-primary">Submit</button>
+                    <a href="<?php echo TEMPLATES_URL . '/Login.php' ?>"><button type="button" class="btn-sm btn-primary">Clear</button></a>
+                </div>
+            </div>
         </form>
     </div>    
 </body>

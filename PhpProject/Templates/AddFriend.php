@@ -57,7 +57,7 @@ include(COMMON_PATH . '\Header.php');
 
 ?>
 <div class='container'> 
-    <h1>Add Friend</h1>  
+    <h1 class='m-0-p-10 m-b-10'>Add Friend</h1>  
     <p>Welcome <b><?php print $name;?></b>! (Not you? Change your user <a href="Login.php">here</a>)</p>
     <hr>
     <p class="text-muted">Enter the ID of the user you want to be friends with:</p>
@@ -71,7 +71,7 @@ include(COMMON_PATH . '\Header.php');
             <input type='text' class='form-control' id='friendIdTxt' name='friendIdTxt' value='<?php print $_SESSION['friendIdTxt']; ?>' >
         </div> 
         <div class="col-lg-5" >
-            <button type='submit' name='sendFriendRequest' class='btn btn-primary'>Send Friend Request</button>
+            <button type='submit' name='sendFriendRequest' class='btn-sm btn-primary'>Send Friend Request</button>
         </div>
         <br><div class='col-lg-10'><p class='success'><?php print $successMessage; ?></p><p class='error'><?php print $errorMessage; ?></p></div>
     </div>

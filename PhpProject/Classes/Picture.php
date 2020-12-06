@@ -66,5 +66,16 @@ class Picture {
         $this->dateAdded = $dateAdded;
     }
     
+    function getAlbumFilePath(){
+        return ALBUM_PICTURES_DIR."/".$this->fileName;
+    }
+    
+    function getThumbnailFilePath(){
+        return ALBUM_THUMBNAILS_DIR."/".$this->fileName;
+    }
+
+    function getOriginalFilePath(){
+        return ORIGINAL_PICTURES_DIR."/".$this->fileName;
+    }
 }
 ?>

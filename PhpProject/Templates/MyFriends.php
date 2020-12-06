@@ -12,18 +12,16 @@ $currentUser = getUserFromID($_SESSION['userLogged']);
 $userId = $currentUser->getUserId();
 $name = $currentUser->getName();
 
-
+$friends = getAllFriends($userId);
+$friendRequests = getAllFriendRequests($userId);
 
 include(COMMON_PATH . '\Header.php'); 
 
 	    $validatorError = "";
-	
-            $friends = getAllFriends($userId);
-            
 	    //Defriend button:    
 	    if(isset($_POST['defriendBtn'])){
 	        if (isset($_POST['defriend'])){
-	            foreach ($_POST['defriend'] as $friendID) //iterate and look for what was selected
+	            foreach ($_POST['defriend'] as $friendId) //iterate and look for what was selected
 	            {
 	                //for each selected line, delete the corresponding friend from friends' list
                         deleteFriend($userId, $friendId);                
@@ -70,23 +68,25 @@ include(COMMON_PATH . '\Header.php');
 
 	?>
 	    <div class="container">
-	        <h1>My Friends</h1
+	        <h1 class='m-0-p-10 m-b-10'>My Friends</h1
 	        <p>Welcome <b><?php print $name;?></b>! (Not you? Change user <a href="Login.php">here</a>)</p>
                 <hr>
 	        <form method='post' action=MyFriends.php> 
+                    
+<?php if($friends != 0 && count($friends) != 0){ ?> 
 	            <!--First table: FRIENDS-->
 	            <table class="myFriendsTable table centerThirdColumn">
 	            <!-- display table header -->
 	            <thead>
 	                <tr>
-	                    <th scope="col">Friends:</th>
-	                    <th scope="col"></th>
-	                    <th scope="col"><a href="AddFriend.php">Add Friends</a></th>                                                                             
+	                    <th scope="col w-20">Friends:</th>
+	                    <th scope="col w-20"></th>
+	                    <th scope="col w-60"><a href="AddFriend.php">Add Friends</a></th>                                                                             
 	                </tr>
 	                <tr>
-	                    <th scope="col">Name</th>
-	                    <th scope="col">Shared Albums</th>
-	                    <th scope="col">Defriend</th>                                                                             
+	                    <th scope="col w-20">Name</th>
+	                    <th scope="col w-20">Shared Albums</th>
+	                    <th scope="col w-60">Defriend</th>                                                                             
 	                </tr>
 	            </thead>   
 	
@@ -105,62 +105,71 @@ include(COMMON_PATH . '\Header.php');
                             }
                         }
                         echo "<tr>";
-                        echo "<td scope='col'><a href='FriendPictures.php?id=".$friendId."'>".$friend->getName()."</a></td>"; // Name
-                        echo "<td scope='col'>".$counter."</td>"; // Shared albums
-                        echo "<td scope='col'><input type='checkbox' name='defriend[]' value='$friendId'/></td>"; // Defriend            
+                        echo "<td scope='col' class='w-20'><a href='FriendPictures.php?id=".$friendId."'>".$friend->getName()."</a></td>"; // Name
+                        echo "<td scope='col' class='w-20'>".$counter."</td>"; // Shared albums
+                        echo "<td scope='col' class='w-60'><input type='checkbox' name='defriend[]' value='$friendId'/></td>"; // Defriend            
                         echo "</tr>";  
                     }
                     ?>              
                         <tr>
-                            <td></td>
-                            <td></td>
-                            <td>
-                                <button type='submit' name='defriendBtn' class='btn btn-danger' onclick='return confirm("The selected friend will be defriended!")'>Defriend Selected</button>  
+                            <td class='text-right' colspan="3">
+                                <button class='btn-sm btn-danger' type='submit' name='defriendBtn' class='btn btn-danger' onclick='return confirm("The selected friend will be defriended!")'>Defriend Selected</button>  
                             </td>
                         </tr>
                         
                     </tbody>
                     </table>
-	  
+<?php  } else { ?>
+                    <p class='text-center'>You have no friends. Click <a href='AddFriend.php'>here</a> to add some!<p>            
+<?php } ?>
 	
-
+<?php if($friendRequests != 0 && count($friendRequests) != 0){ ?> 
                     <!--Second table: REQUESTS -->
 	            <table class="myFriendsTable table centerSecondColumn">
 	            <!-- display table header -->
 	            <thead>
 	                <tr>
-	                    <th scope="col">Friend Requests:</th>
-	                    <th scope="col"></th>                                                                             
+	                    <th scope="col" class='w-20'>Friend Requests:</th>
+                            <th scope='col' class='w-20'></th>
+	                    <th scope="col" class='w-60'></th>                                                                             
 	                </tr>
 	                <tr>
-	                    <th scope="col">Name</th>
-	                    <th scope="col">Accept or Deny</th>                                                                             
+	                    <th scope="col" class='w-20'>Name</th>
+                            <th scope='col' class='w-20'></th>
+	                    <th scope="col" class='w-60 text-center'>Accept or Deny</th>                                                                             
 	                </tr>
 	            </thead>               
 	            <!--example for table body - MUST BE TWEAKED TO BRING VALUES FROM DATABASE -->             
 	            <tbody>
 	            <?php
 	            //getting a list of userId's where friendshipstatus = requested
-                    $friendRequests = getAllFriendRequests($userId);
+                    
 	            foreach ($friendRequests as $friendRequest)
 	            {
 	                echo "<tr>";
-	                echo "<td scope='col'>".$friendRequest->getName()."</td>"; // Name
-	                echo "<td scope='col'><input type='checkbox' name='acceptDeny[]' value='".$friendRequest->getUserId()."' /></td>"; // Accept or deny            
+	                echo "<td scope='col' class='w-20'>".$friendRequest->getName()."</td>"; // Name
+                        echo "<td scope='col' class='w-20'></td>";
+	                echo "<td scope='col' class='w-60 text-center'><input type='checkbox' name='acceptDeny[]' value='".$friendRequest->getUserId()."' /></td>"; // Accept or deny            
 	                echo "</tr>";
 	            }            
 	            ?>   
                         <tr>
-                            <td></td>
-                            <td><!--Accept/Deny buttons--> 
-                                <button type='submit' name='acceptBtn' class='btn btn-primary'>Accept Selected</button>  
-                                <button type='submit' name='denyBtn' class='btn btn-danger ' onclick='return confirm("The selected request will be denied!")'>Deny Selected</button>
+                            <td class='text-right' colspan='3'><!--Accept/Deny buttons--> 
+                                <button type='submit' name='acceptBtn' class='btn-sm btn-primary'>Accept Selected</button>  
+                                <button type='submit' name='denyBtn' class='btn-sm btn-danger ' onclick='return confirm("The selected request will be denied!")'>Deny Selected</button>
                             </td>
                         </tr>
 	            </tbody>
                     </table>
                 </form> 
             </div>
+
+<?php  } else { ?>
+                    <br><br><p class='text-center'>You have no friend requests.<p>            
+<?php } ?>
+
+
+</div>
 
 <?php include(COMMON_PATH . '\Footer.php'); ?>
 	
