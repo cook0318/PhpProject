@@ -3,6 +3,10 @@
 require_once('../Functions/GeneralFunctions.php');
 $pageTitle = "Sign Up";
 
+unset($_SESSION['albumSelected']);
+unset($_SESSION['pictureSelectedId']);
+unset($_SESSION['userLogged']);
+
 $id = $_POST['txtId'] ?? '';
 $name = $_POST['txtName'] ?? '';
 $phoneNumber = $_POST['telPhoneNumber'] ?? '';
@@ -22,10 +26,12 @@ if(isPostRequest()) {
     if(empty($errors)) {
         createUser($id, $name, $phoneNumber, $password);
         
+        // Redirect to the page the user was attempting access, and they don't have a previously requested page,
+        // redirect to MyAlbums as a default.
         if(isset($_SESSION["lastPage"])) {
             header('Location: ' . TEMPLATES_URL . '/' . $_SESSION["lastPage"] . '.php');
         } else {
-            header('Location: ' . TEMPLATES_URL . '/Index.php');
+            header('Location: ' . TEMPLATES_URL . '/MyAlbums.php');
         }
     }
 }

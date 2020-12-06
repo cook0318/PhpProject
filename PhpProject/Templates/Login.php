@@ -22,10 +22,12 @@ if(isPostRequest()) {
     }
     
     if(empty($errors)) {
+        // Redirect to the page the user was attempting access, and they don't have a previously requested page,
+        // redirect to MyAlbums as a default.
         if(isset($_SESSION["lastPage"])) {
             header('Location: ' . TEMPLATES_URL . '/' . $_SESSION["lastPage"] . '.php');
         } else {
-            header('Location: ' . TEMPLATES_URL . '/Index.php');
+            header('Location: ' . TEMPLATES_URL . '/MyAlbums.php');
         }
     }
 }

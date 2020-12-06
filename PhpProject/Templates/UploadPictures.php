@@ -145,8 +145,8 @@ if($userHasAlbums){
 	                </div>
 	                <div class='col-lg-4 col-md-6 col-sm-8 col-xs-8'>
 	                    <input type='text' class='form-control' id='pictureTitle' name='pictureTitle' 
-	                    value=<?php if (isset($_POST['pictureTitle'])){
-	                            echo $_POST['pictureTitle'];} ?> >
+	                    value="<?php if (isset($_POST['pictureTitle'])){
+	                            echo $_POST['pictureTitle'];} ?>">
 	                </div>   
                         <div class='col-lg-4 col-md-2 col-sm-4' style='color:red'>
 	                    <?php echo $titleError; ?>
@@ -158,9 +158,8 @@ if($userHasAlbums){
 	                    <label for='pictureDescription' class='col-form-label'><b>Description:</b> </label>
 	                </div>
 	                <div class='col-lg-4 col-md-6 col-sm-8 col-xs-8'>
-	                    <textarea  class='form-control' id='pictureDescription'  name='pictureDescription' style='height:150px'><?php
-	                        $pictureDescription
-	                    ?></textarea>
+	                    <textarea  class='form-control' id='pictureDescription'  name='pictureDescription' style='height:150px'><?php if (isset($_POST['pictureDescription'])){
+	                            echo $_POST['pictureDescription'];} ?></textarea>
                         </div>
                         <div class='col-lg-4 col-md-2 col-sm-4' style='color:red'>
 	                    <?php echo $descriptionError; ?>
