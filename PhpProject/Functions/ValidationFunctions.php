@@ -48,7 +48,7 @@ function validateId ($id) {
 
     if(notEmpty($id)) {
         if (strlen($id) <= 16) {
-            $sql = 'SELECT COUNT(*) as num FROM User WHERE user_id = :userId';
+            $sql = 'SELECT COUNT(*) as num FROM User WHERE userId = :userId';
             $preparedStatement = $PDO->prepare($sql);
             $preparedStatement->execute(['userId' => idEscape($id)]);
             
